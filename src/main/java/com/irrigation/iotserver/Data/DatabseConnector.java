@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver;
+package com.irrigation.iotserver.Data;
 
 /**
  *
  * @author brune
  */
-public class Main {
-    
-    public static void main(String [] Args){ 
-        new Program();
-    }
+public class DatabseConnector {
     
 }
