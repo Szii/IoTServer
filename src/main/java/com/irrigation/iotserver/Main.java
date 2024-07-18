@@ -11,8 +11,8 @@ package com.irrigation.iotserver;
  */
 public class Main {
     
-    public static void main(String [] Args){
-        
+    public static void main(String [] Args){ 
+        new Program();
     }
     
 }
