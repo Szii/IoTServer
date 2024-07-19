@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Messages;
+package com.irrigation.Messages;
+
+import java.io.Serializable;
 
 /**
  *
  * @author brune
  */
-public class Payload {
+public class Payload implements Serializable {
     String content;
     MessageType type;
     Code code;
@@ -22,8 +24,6 @@ public class Payload {
         this.code = code;
     }
     
-    
-
     public String getContent() {
         return content;
     }

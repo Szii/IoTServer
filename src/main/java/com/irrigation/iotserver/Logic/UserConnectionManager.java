@@ -29,6 +29,7 @@ public class UserConnectionManager extends Thread {
 
     public UserConnectionManager(DataAccess databaseManager) {
         this.databaseManager = databaseManager;
+        connections = new ArrayList();
     }
     
     @Override
@@ -42,8 +43,8 @@ public class UserConnectionManager extends Thread {
         }
         while (true){   
             try {
+                System.out.println("waiting for connection");
                 Socket clienConnectiuonSocket = serverSocket.accept();
-                //Waiting for connection will be there
                 UserConnection userConnection = new UserConnection(clienConnectiuonSocket,databaseManager);
                 connections.add(userConnection);
                 userConnection.start();

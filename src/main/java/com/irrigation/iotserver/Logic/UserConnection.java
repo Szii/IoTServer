@@ -6,7 +6,9 @@
 package com.irrigation.iotserver.Logic;
 
 import com.irrigation.iotserver.Data.DataAccess;
-import com.irrigation.iotserver.Messages.Payload;
+import com.irrigation.Messages.Code;
+import com.irrigation.Messages.MessageType;
+import com.irrigation.Messages.Payload;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -32,15 +34,19 @@ public class UserConnection extends Thread{
     
     @Override
     public void run(){
-        
+        System.out.println("user connected, thread created");
         try {
             objectInput = new ObjectInputStream(socket.getInputStream());
             objectOutput = new ObjectOutputStream(socket.getOutputStream());
             //Connection estabilished, wait for messages and do proper opeation
             while (true){
+                System.out.println("waiting for message from user");
                 Payload message;
                 message = ((Payload)objectInput.readObject());   //Waiting for message will be there
-              
+                if(message.getCode().equals(Code.FAILURE)){
+                    this.interrupt();
+                }
+                processMessage(message);
                 //reacting to message
             }
         } catch (IOException ex) {
@@ -49,6 +55,25 @@ public class UserConnection extends Thread{
             Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    
+    private void processMessage(Payload message){
+        switch(message.getType()){
+            case PING:
+                System.out.println("Ping arrived");
+                sendMessage(new Payload());
+        }
+    }
+    
+    private void sendMessage(Payload message){
+        try {
+            message.setCode(Code.SUCCESS);
+            objectOutput.writeObject(message);
+        } catch (IOException ex) {
+            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     
     
 }

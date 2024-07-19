@@ -9,6 +9,7 @@ import com.irrigation.iotserver.Data.DataAccess;
 import com.irrigation.iotserver.Logic.OutboundManager;
 import com.irrigation.iotserver.Data.DatabaseConnector;
 import com.irrigation.iotserver.Data.DatabaseManager;
+import com.irrigation.iotserver.Logic.UserConnectionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -26,12 +27,8 @@ public class Program {
     public Program(){
         prepareConnectionToDatabase();
         prepareConnectionToLoRaServer();
-        try {
-            addUser();
-        } catch (SQLException ex) {
-            Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        UserConnectionManager userConnectionManager = new UserConnectionManager(databaseManager);
+        userConnectionManager.start();
     } 
     
     private void prepareConnectionToLoRaServer(){

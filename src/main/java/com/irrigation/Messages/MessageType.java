@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Messages;
+package com.irrigation.Messages;
 
 /**
  *
  * @author brune
  */
-public enum Code {
-    SUCCESS,
-    FAILURE
+public enum MessageType {
+    PING
 }
