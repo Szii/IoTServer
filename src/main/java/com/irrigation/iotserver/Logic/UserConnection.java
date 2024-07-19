@@ -11,11 +11,21 @@ import com.irrigation.iotserver.Data.DataAccess;
  *
  * @author brune
  */
-public class UserConnection {
+public class UserConnection extends Thread{
     DataAccess databaseManager;
 
     public UserConnection(DataAccess databaseManager) {
         this.databaseManager = databaseManager;
+    }
+    
+    @Override
+    public void start(){
+        
+        //Connection estabilished, wait for messages and do proper opeation
+        while (true){
+            //Waiting for message will be there
+            
+        }
     }
     
     

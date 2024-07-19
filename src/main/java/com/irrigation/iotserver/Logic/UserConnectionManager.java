@@ -6,6 +6,8 @@
 package com.irrigation.iotserver.Logic;
 
 import com.irrigation.iotserver.Data.DataAccess;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  *
@@ -14,6 +16,8 @@ import com.irrigation.iotserver.Data.DataAccess;
 public class UserConnectionManager extends Thread {
     
     DataAccess databaseManager;
+    ArrayList<UserConnection> connections;
+    
 
     public UserConnectionManager(DataAccess databaseManager) {
         this.databaseManager = databaseManager;
@@ -21,11 +25,18 @@ public class UserConnectionManager extends Thread {
     
     @Override
     public void start(){
-        //whewn client connects, new thread is created for him
+        //when client connects, new thread is created for him
         //thread process all user requests and responses
-        while (true){       
+        while (true){   
+            //Waiting for connection will be there
             UserConnection userConnection = new UserConnection(databaseManager);
+            connections.add(userConnection);
+            userConnection.start();
         }
+    }
+    
+    public void removeConnection(UserConnection userConnection){
+        connections.remove(userConnection);
     }
     
     
