@@ -11,13 +11,15 @@ package com.irrigation.iotserver.Messages;
  */
 public class Payload {
     String content;
-    String type;
+    MessageType type;
+    Code code;
     
     public Payload(){}
 
-    public Payload(String content, String type) {
+    public Payload(String content, MessageType type, Code code) {
         this.content = content;
         this.type = type;
+        this.code = code;
     }
     
     
@@ -30,13 +32,22 @@ public class Payload {
         this.content = content;
     }
 
-    public String getType() {
+    public MessageType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(MessageType type) {
         this.type = type;
     }
-    
+
+    public Code getCode() {
+        return code;
+    }
+
+    public void setCode(Code code) {
+        this.code = code;
+    }
+
+
     
 }
