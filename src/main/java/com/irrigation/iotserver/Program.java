@@ -24,8 +24,8 @@ public class Program {
     DataAccess databaseManager;
     OutboundManager dataConnector;
     public Program(){
-        prepareConnectionToLoRaServer();
         prepareConnectionToDatabase();
+        prepareConnectionToLoRaServer();
         try {
             addUser();
         } catch (SQLException ex) {
@@ -35,7 +35,7 @@ public class Program {
     } 
     
     private void prepareConnectionToLoRaServer(){
-        dataConnector = new OutboundManager();
+        dataConnector = new OutboundManager(databaseManager);
     }
     
     private void prepareConnectionToDatabase(){
