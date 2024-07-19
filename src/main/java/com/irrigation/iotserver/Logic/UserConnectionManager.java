@@ -22,7 +22,7 @@ public class UserConnectionManager extends Thread {
     @Override
     public void start(){
         //whewn client connects, new thread is created for him
-        //thread process all user requests 
+        //thread process all user requests and responses
         while (true){       
             UserConnection userConnection = new UserConnection(databaseManager);
         }

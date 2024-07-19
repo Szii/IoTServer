@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Data;
+package com.irrigation.iotserver.Logic;
 
+import com.irrigation.iotserver.Data.DataAccess;
+import com.irrigation.iotserver.Data.Publisher;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -15,10 +17,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
- *
+ * Recieve and sends MQTT messages. These messages are processed and data are stored or retreived from DB
  * @author brune
  */
-public class DataConnector implements IMqttMessageListener {
+public class OutboundManager extends Thread implements IMqttMessageListener  {
     
     
     String address = "eu2.cloud.thethings.industries:1883";
@@ -26,8 +28,14 @@ public class DataConnector implements IMqttMessageListener {
     String accessKey = "NNSXS.J4N5MS7NOT5SOKD7SZQVAUR4EAW77SHKHUEUECY.YS2LWSWGNA7VUZDPUG2ANSQVW2QNXV7WIFFHO7JFEOKRH6I4JSAA";
     MqttClient client;
     Publisher pub;
+    DataAccess databaseManager;
 
-    public DataConnector(){
+    public OutboundManager(DataAccess databaseManager){
+        this.databaseManager = databaseManager;
+    }
+    
+    @Override
+    public void start(){
         try {
             client = new MqttClient(
                     "tcp://eu2.cloud.thethings.industries:1883", //URI
@@ -36,9 +44,8 @@ public class DataConnector implements IMqttMessageListener {
             connect();
             subscribeToTopics();
         } catch (MqttException ex) {
-            Logger.getLogger(DataConnector.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
     
     private void subscribeToTopics() throws MqttException{
@@ -54,7 +61,7 @@ public class DataConnector implements IMqttMessageListener {
         try {
             client.connect(options);
         } catch (MqttException ex) {
-            Logger.getLogger(DataConnector.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }
       
     }
@@ -65,7 +72,7 @@ public class DataConnector implements IMqttMessageListener {
         try {
             pub.sentMessageToDevice(device,message);
         } catch (MqttException ex) {
-            Logger.getLogger(DataConnector.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

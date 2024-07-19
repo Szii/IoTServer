@@ -6,7 +6,7 @@
 package com.irrigation.iotserver;
 
 import com.irrigation.iotserver.Data.DataAccess;
-import com.irrigation.iotserver.Data.DataConnector;
+import com.irrigation.iotserver.Logic.OutboundManager;
 import com.irrigation.iotserver.Data.DatabaseConnector;
 import com.irrigation.iotserver.Data.DatabaseManager;
 import java.sql.Connection;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class Program {
     DataAccess databaseManager;
-    DataConnector dataConnector;
+    OutboundManager dataConnector;
     public Program(){
         prepareConnectionToLoRaServer();
         prepareConnectionToDatabase();
@@ -35,7 +35,7 @@ public class Program {
     } 
     
     private void prepareConnectionToLoRaServer(){
-        dataConnector = new DataConnector();
+        dataConnector = new OutboundManager();
     }
     
     private void prepareConnectionToDatabase(){
