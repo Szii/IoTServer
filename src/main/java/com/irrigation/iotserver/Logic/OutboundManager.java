@@ -7,6 +7,7 @@ package com.irrigation.iotserver.Logic;
 
 import com.irrigation.iotserver.Data.DataAccess;
 import com.irrigation.iotserver.Data.Publisher;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -96,6 +97,7 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     public void messageArrived(String topic, MqttMessage message) throws Exception {
        String messageTxt = new String( message.getPayload(), "UTF-8" );
        System.out.println( "Message arrived on topic: " + topic + ": '" + messageTxt + "'");
+       evaluateMessageBasedOnType(messageTxt);
     }
 
     @Override
@@ -110,5 +112,20 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
         } catch (MqttException ex) {
             Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void evaluateMessageBasedOnType(String wholeMessageAsJSON) throws SQLException{
+        //make parsing one time only
+        switch (EndDeviceMessageParser.getInstance().getTypeOfData(wholeMessageAsJSON)){
+            case "humidity":
+                String humidity = EndDeviceMessageParser.getInstance().getDataValue(wholeMessageAsJSON);
+                String device = EndDeviceMessageParser.getInstance().getEndDeviceID(wholeMessageAsJSON);
+                String date = "";
+                databaseManager.addMeasurmentQuery(device, humidity, date);
+                break;
+            default:
+                break;
+        }
+        
     }
 }
