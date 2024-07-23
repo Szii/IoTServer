@@ -9,7 +9,9 @@ import com.irrigation.iotserver.Data.DataAccess;
 import com.irrigation.iotserver.Data.Publisher;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -20,7 +22,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  * Recieve and sends MQTT messages. These messages are processed and data are stored or retreived from DB
  * @author brune
  */
-public class OutboundManager extends Thread implements IMqttMessageListener  {
+public class OutboundManager extends Thread implements IMqttMessageListener, MqttCallback  {
     
     
     String address = "eu2.cloud.thethings.industries:1883";
@@ -32,10 +34,10 @@ public class OutboundManager extends Thread implements IMqttMessageListener  {
 
     public OutboundManager(DataAccess databaseManager){
         this.databaseManager = databaseManager;
+        init();
     }
     
-    @Override
-    public void start(){
+    private void init(){
         try {
             client = new MqttClient(
                     "tcp://eu2.cloud.thethings.industries:1883", //URI
@@ -48,7 +50,18 @@ public class OutboundManager extends Thread implements IMqttMessageListener  {
         }
     }
     
+    @Override
+    public void run(){
+      
+    }
+    
+    
     private void subscribeToTopics() throws MqttException{
+        //client.subscribe("v3/+/devices/+/up",this);
+        client.subscribe("v3/+/devices/+/down/push", (topic, msg) -> {
+        byte[] payload = msg.getPayload();
+        System.out.println("Arrived.............");
+        });    
         client.subscribe("#", this);
         System.out.println("Subscribed to topics");
         
@@ -57,9 +70,12 @@ public class OutboundManager extends Thread implements IMqttMessageListener  {
     private void connect(){
         MqttConnectOptions options = new MqttConnectOptions();
         options.setUserName(appId);
-        options.setPassword(accessKey.toCharArray()); 
+        options.setPassword(accessKey.toCharArray());     
         try {
+            
+            client.setCallback(this);
             client.connect(options);
+            
         } catch (MqttException ex) {
             Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -79,6 +95,20 @@ public class OutboundManager extends Thread implements IMqttMessageListener  {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
        String messageTxt = new String( message.getPayload(), "UTF-8" );
-       System.out.println( "Message on " + topic + ": '" + messageTxt + "'");
+       System.out.println( "Message arrived on topic: " + topic + ": '" + messageTxt + "'");
+    }
+
+    @Override
+    public void connectionLost(Throwable cause) {
+       System.out.println("Connection lost");
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken token) {
+        try {
+            System.out.println("Message delivered: " + token.getMessage().toString());
+        } catch (MqttException ex) {
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

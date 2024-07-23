@@ -29,10 +29,12 @@ public class Program {
         prepareConnectionToLoRaServer();
         UserConnectionManager userConnectionManager = new UserConnectionManager(databaseManager);
         userConnectionManager.start();
+        dataConnector.sendMessage("eui-70b3d57ed8003263", "test");
     } 
     
     private void prepareConnectionToLoRaServer(){
         dataConnector = new OutboundManager(databaseManager);
+        dataConnector.start();
     }
     
     private void prepareConnectionToDatabase(){
