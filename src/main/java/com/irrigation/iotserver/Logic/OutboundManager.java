@@ -20,7 +20,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
- * Recieve and sends MQTT messages. These messages are processed and data are stored or retreived from DB
+ * Retrieve and sends MQTT messages. These messages are processed and data are stored or got from DB
  * @author brune
  */
 public class OutboundManager extends Thread implements IMqttMessageListener, MqttCallback  {
@@ -115,7 +115,7 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     }
     
     private void evaluateMessageBasedOnType(String wholeMessageAsJSON) throws SQLException{
-        //make parsing one time only
+        //to do: make parsing one time only
         switch (EndDeviceMessageParser.getInstance().getTypeOfData(wholeMessageAsJSON)){
             case "humidity":
                 String humidity = EndDeviceMessageParser.getInstance().getDataValue(wholeMessageAsJSON);

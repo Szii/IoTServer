@@ -6,7 +6,7 @@
 package com.irrigation.iotserver.Logic;
 
 /**
- *
+ * Singleton class used to parse JSON retrieved through MQTT
  * @author brune
  */
 public class EndDeviceMessageParser {

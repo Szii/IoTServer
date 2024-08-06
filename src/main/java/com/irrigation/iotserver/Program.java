@@ -10,7 +10,6 @@ import com.irrigation.iotserver.Logic.OutboundManager;
 import com.irrigation.iotserver.Data.DatabaseConnector;
 import com.irrigation.iotserver.Data.DatabaseManager;
 import com.irrigation.iotserver.Logic.UserConnectionManager;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +38,7 @@ public class Program {
     
     private void prepareConnectionToDatabase(){
          try {
-            databaseManager = new DatabaseManager(new DatabaseConnector().getConnection());
+            databaseManager = new DatabaseManager(new DatabaseConnector().connect());
             
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);

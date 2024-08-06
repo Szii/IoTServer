@@ -6,29 +6,30 @@
 package com.irrigation.Messages;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
  * @author brune
  */
 public class Payload implements Serializable {
-    String content;
+    List<String> content;
     MessageType type;
     Code code;
     
     public Payload(){}
 
-    public Payload(String content, MessageType type, Code code) {
+    public Payload(List<String> content, MessageType type, Code code) {
         this.content = content;
         this.type = type;
         this.code = code;
     }
     
-    public String getContent() {
+    public List<String> getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(List<String> content) {
         this.content = content;
     }
 

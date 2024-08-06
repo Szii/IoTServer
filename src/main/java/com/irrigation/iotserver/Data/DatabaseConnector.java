@@ -15,14 +15,13 @@ import java.sql.SQLException;
  */
 public class DatabaseConnector {
     
-    Connection connection;
     
     //Connect to DB
     public DatabaseConnector() throws ClassNotFoundException, SQLException{
            connect();
     }
     
-    public void connect() throws ClassNotFoundException, SQLException{
+    public Connection connect() throws ClassNotFoundException, SQLException{
  
 
         // Specify the connection URL, username, and password
@@ -30,12 +29,7 @@ public class DatabaseConnector {
           final String user = "root";
           final String password = "root";
 
-        // Create the connection
-         connection = DriverManager.getConnection(databaseURL, user, password);
-    }
-
-    public Connection getConnection() {
-        return connection;
+         return DriverManager.getConnection(databaseURL, user, password);
     }
     
     

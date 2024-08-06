@@ -42,12 +42,13 @@ public class UserConnection extends Thread{
             while (true){
                 System.out.println("waiting for message from user");
                 Payload message;
-                message = ((Payload)objectInput.readObject());   //Waiting for message will be there
+                message = ((Payload)objectInput.readObject());   //Blocking method
+                
                 if(message.getCode().equals(Code.FAILURE)){
-                    this.interrupt();
+                    this.interrupt(); //end the conection
                 }
-                processMessage(message);
-                //reacting to message
+                processMessage(message); //reacting to message
+                
             }
         } catch (IOException ex) {
             Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
