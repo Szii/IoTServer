@@ -22,26 +22,6 @@ public enum MessageType implements Serializable  {
      */
     PONG,
     /**
-     * Init message, it announces that current thread is used as update thread on server side
-     */
-    UPDATE_THREAD,
-    /**
-     * Init message, it announces that current thread is used as ack thread on server side for PONG requests
-     */
-    ACK_THREAD,
-    /**
-     * Adding a new user
-     */
-    ADD_USER,
-   /**
-     * Init message, it announces that current thread is used as main unit thread on server side for PONG requests
-     */
-    UNIT,
-    /**
-     * Init message, it announces that current thread is used as main user thread on server side for PONG requests
-     */
-    USER,
-    /**
      * Confirming login message
      */
     CONFIRM_LOGIN,
@@ -61,14 +41,6 @@ public enum MessageType implements Serializable  {
      * Adding new measured value
      */
     ADD_MEASURED_VALUE,
-    /**
-     * Check if sensor belongs to current unit
-     */
-    DOES_SENSOR_BELONGS_TO_UNIT,
-    /**
-     * Check, if sensor is available to be seen by any unit
-     */
-    IS_SENSOR_HIDDEN_FROM_UNIT,
     /**
      * Unregistering a sensor
      */
@@ -103,36 +75,7 @@ public enum MessageType implements Serializable  {
     GET_MEASUREMENT_DATA_IN_RANGE,    
     /**
      * Check if unit is in the data source
-     */
-    CHECK_IF_UNIT_EXISTS,
-    /**
-     * Checking if unit is registered under any user
-     */
-    CHECK_IF_UNIT_IS_REGISTERED,
-    /**
-     * Getting unit nickname
-     */
-    GET_UNIT_NICKNAME,
-    /**
-     * Getting unit ID
-     */
-    GET_UNIT,
-    /**
-     * Registering new unit
-     */
-    REGISTERR_UNIT,
-    /**
-     * Getting all registered unit under user
-     */
-    GET_REGISTERED_UNITS,
-    /**
-     * Unregistering unit
-     */
-    UNREGISTER_UNIT,
-    /**
-     * Checking, if unit is online
-     */
-    IS_UNIT_ONLINE,
+     
     /**
      * Gettings all sensors register under specific unit
      */
@@ -143,14 +86,6 @@ public enum MessageType implements Serializable  {
     SET_UNIT_NICKNAME,
     /**
      * Getting all unregistered sensors
-     */
-    GET_UNREGISTERED_SENSORS,
-    /**
-     * Getting all unregistered sensors for specific unit in its range
-     */
-    GET_UNREGISTERED_SENSORS_IN_RANGE,
-     /**
-     * Getting all unregistered sensors for specific unit in its range
      */
     GET_SENSORS_IN_RANGE,
     /**

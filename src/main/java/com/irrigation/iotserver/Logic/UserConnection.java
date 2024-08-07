@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,15 +56,28 @@ public class UserConnection extends Thread{
             Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     
-    private void processMessage(Payload message){
+    private void processMessage(Payload message) throws SQLException{
         switch(message.getType()){
             case PING:
                 System.out.println("Ping arrived");
                 sendMessage(new Payload());
+            case CONFIRM_LOGIN:
+                System.out.println("Login attempt");
+                if(databaseManager.confirmLoginQuery(message.getContent().get(0), message.getContent().get(1))){
+                    sendMessage(new Payload(new ArrayList<String>(),message.getType(),Code.SUCCESS));
+                }
+                else{
+                    sendMessage(new Payload(new ArrayList<String>(),message.getType(),Code.FAILURE));
+                }
+                
+                
+                
         }
     }
     

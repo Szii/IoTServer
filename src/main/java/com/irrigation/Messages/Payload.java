@@ -12,6 +12,7 @@ import java.util.List;
  *
  * @author brune
  */
+
 public class Payload implements Serializable {
     List<String> content;
     MessageType type;
