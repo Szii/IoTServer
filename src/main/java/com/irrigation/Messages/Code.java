@@ -5,11 +5,13 @@
  */
 package com.irrigation.Messages;
 
+import java.io.Serializable;
+
 /**
  *
  * @author brune
  */
-public enum Code {
+public enum Code implements Serializable {
     SUCCESS,
-    FAILURE
+    FAILURE,
 }

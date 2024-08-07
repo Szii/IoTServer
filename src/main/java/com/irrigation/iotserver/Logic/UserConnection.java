@@ -69,10 +69,12 @@ public class UserConnection extends Thread{
                 sendMessage(new Payload());
             case CONFIRM_LOGIN:
                 System.out.println("Login attempt");
-                if(databaseManager.confirmLoginQuery(message.getContent().get(0), message.getContent().get(1))){
+                if(databaseManager.confirmLoginQuery(message.getContent().get(0), message.getContent().get(1)) == true){
+                   System.out.println("Sending success");
                     sendMessage(new Payload(new ArrayList<String>(),message.getType(),Code.SUCCESS));
                 }
                 else{
+                     System.out.println("Sending failure");
                     sendMessage(new Payload(new ArrayList<String>(),message.getType(),Code.FAILURE));
                 }
                 
@@ -83,7 +85,6 @@ public class UserConnection extends Thread{
     
     private void sendMessage(Payload message){
         try {
-            message.setCode(Code.SUCCESS);
             objectOutput.writeObject(message);
         } catch (IOException ex) {
             Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);

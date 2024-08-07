@@ -24,11 +24,11 @@ public class DatabaseManager implements DataAccess {
     
     
         @Override
-      public boolean confirmLoginQuery(String name,String password) throws SQLException{
-         String query = "SELECT* FROM users WHERE name = ?" + "AND" + " password = ?";
+      public boolean confirmLoginQuery(String username,String password) throws SQLException{
+         String query = "SELECT* FROM users WHERE username = ?" + "AND" + " password = ?";
                 PreparedStatement pst;
                 pst = connection.prepareStatement(query);
-                pst.setString(1, name);
+                pst.setString(1, username);
                 pst.setString(2,password);     
                 ResultSet result = pst.executeQuery();
  
@@ -40,7 +40,7 @@ public class DatabaseManager implements DataAccess {
                 }
                 else{
                      pst.close();
-                     return false;
+                      return false;
                 }
          
         }
