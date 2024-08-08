@@ -5,10 +5,11 @@
  */
 package com.irrigation.iotserver.Logic;
 
+import com.irrigation.Messages.MessageData.Device;
 import com.irrigation.iotserver.Data.DataAccess;
-import com.irrigation.Messages.Code;
-import com.irrigation.Messages.MessageType;
-import com.irrigation.Messages.Payload;
+import com.irrigation.Messages.MessageFormat.Code;
+import com.irrigation.Messages.MessageFormat.MessageType;
+import com.irrigation.Messages.MessageFormat.Payload;
 import com.irrigation.iotserver.Security.PasswordHasher;
 import com.irrigation.iotserver.Security.TokenGenerator;
 import java.io.IOException;
@@ -69,12 +70,14 @@ public class UserConnection extends Thread{
         switch(message.getType()){
             case PING:
                 System.out.println("Ping arrived");
-                sendMessage(new Payload());
+                sendMessage(new Payload.PayloadBuilder<Code>()
+                        .setObject(Code.SUCCESS)
+                        .build());
+            break;  
             case CONFIRM_LOGIN:
                 System.out.println("Login attempt");
-                if(PasswordHasher.compareIfPassowrdMatchesWithStoredHash(
-                        message.getContent().get(1), 
-                        databaseManager.getPasswordQuery(message.getContent().get(0)))){
+                if(PasswordHasher.compareIfPassowrdMatchesWithStoredHash((String) message.getContent().get(1), 
+                        databaseManager.getPasswordQuery((String) message.getContent().get(0)))){
                     userToken = TokenGenerator.generateToken();
                     sendLoginConfirmationSuccess();
                     System.out.println(userToken);
@@ -83,23 +86,55 @@ public class UserConnection extends Thread{
                 else{
                     sendCodeAnswerToDatabaseRequest(false, message.getType());
                 }
-                break;
+            break;
             case GET_USER:
                 System.out.println("Does user exist?");
-                sendCodeAnswerToDatabaseRequest(databaseManager.getUserQuery(
-                        message.getContent().get(0)),message.getType());
+                sendCodeAnswerToDatabaseRequest(databaseManager.getUserQuery((String) message.getContent().get(0)),message.getType());
                 break;
             case ADD_USER:
                 System.out.println("Adding user");
-                sendCodeAnswerToDatabaseRequest(databaseManager.addUserQuery(
-                        message.getContent().get(0),
-                        PasswordHasher.getHash(message.getContent().get(1))), message.getType()); 
-                break;
+                sendCodeAnswerToDatabaseRequest(databaseManager.addUserQuery((String) message.getContent().get(0),
+                        PasswordHasher.getHash((String) message.getContent().get(1))), message.getType()); 
+            break;
+            case GET_AVAILABLE_REGISTERED_SENSORS:
+                sendMessage(new Payload.PayloadBuilder<Payload>()
+                        .setCode(Code.SUCCESS)
+                        .setObject(getAvailableDevicesBasedOnUsername((String) message.getContent().get(0)))
+                        .setType(MessageType.GET_AVAILABLE_REGISTERED_SENSORS)
+                        .build());
+            break;
+            
                 
         }
     }
     
     
+    private ArrayList<Device> getAvailableDevicesBasedOnUsername(String username){
+         ArrayList<Device> devices = new ArrayList();
+        try {
+            for (String sensorID : databaseManager.getAvailableSensors(username)){
+                Device device = new Device.DeviceBuilder()
+                        .setID(sensorID)
+                        .setNickname(databaseManager.getSensorNickname(sensorID))
+                        .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
+                        .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(0))
+                        .setLastMeasuredValue(databaseManager.getMeasurementDataQuery(sensorID).get(0))
+                        .setThreshold(databaseManager.getThresoldQuery(sensorID))
+                        .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
+                        .build();
+                
+                devices.add(device);
+
+            }
+            return devices;
+                    
+                    } catch (SQLException ex) {
+            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            return devices;
+        }
+    }
+        
+   
     private void sendMessage(Payload message){
         try {
             objectOutput.writeObject(message);
@@ -109,7 +144,8 @@ public class UserConnection extends Thread{
     }
     
     private void sendLoginConfirmationSuccess(){
-        sendMessage(new Payload.PayloadBuilder(Code.SUCCESS)
+        sendMessage(new Payload.PayloadBuilder()
+         .setCode(Code.SUCCESS)
          .setToken(userToken)
          .setType(MessageType.CONFIRM_LOGIN)
          .build());
@@ -119,13 +155,15 @@ public class UserConnection extends Thread{
     private void sendCodeAnswerToDatabaseRequest(boolean isRequestValid, MessageType requestType){
         if(isRequestValid){
                    System.out.println("Sending success");
-                    sendMessage(new Payload.PayloadBuilder(Code.SUCCESS)
+                    sendMessage(new Payload.PayloadBuilder()
+                    .setCode(Code.SUCCESS)
                     .setType(requestType)
                     .build());
                 }
                 else{
                     System.out.println("Sending failure");
-                    sendMessage(new Payload.PayloadBuilder(Code.FAILURE)
+                    sendMessage(new Payload.PayloadBuilder()
+                    .setCode(Code.FAILURE)
                     .setType(requestType)
                     .build());
                 }

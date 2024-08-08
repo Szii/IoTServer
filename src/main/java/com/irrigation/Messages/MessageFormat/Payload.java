@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.Messages;
+package com.irrigation.Messages.MessageFormat;
 
+import com.irrigation.Messages.MessageData.Device;
 import java.io.Serializable;
 import java.util.List;
 
@@ -12,11 +13,12 @@ import java.util.List;
  *
  * @author brune
  */
-public class Payload implements Serializable {
+public class Payload<T> implements Serializable {
     List<String> content;
     MessageType type;
     Code code;
     String token;
+    T data;
 
     public String getToken() {
         return token;
@@ -33,6 +35,7 @@ public class Payload implements Serializable {
         this.type = builder.type;
         this.code = builder.code;
         this.token = builder.token;
+        this.data = (T) builder.data;
     }
     
     public List<String> getContent() {
@@ -59,15 +62,20 @@ public class Payload implements Serializable {
         this.code = code;
     }
     
-    public static class PayloadBuilder{
+    public T getCarriedObject(){
+        return data;
+    }
+    
+    
+    public static class PayloadBuilder<E>{
         private List<String> content;
         private MessageType type;
         private Code code;
         private String token;
+        private E data;
    
     
-        public PayloadBuilder(Code code) {
-            this.code = code;
+        public PayloadBuilder() {
         }
         
         public PayloadBuilder setToken(String token){
@@ -86,6 +94,11 @@ public class Payload implements Serializable {
         }
         public PayloadBuilder setType(MessageType type){
             this.type = type;
+            return this;
+        }
+        
+        public PayloadBuilder setObject(E data){
+            this.data = data;
             return this;
         }
         

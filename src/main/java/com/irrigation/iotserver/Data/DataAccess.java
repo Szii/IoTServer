@@ -138,11 +138,11 @@ public interface DataAccess {
     public void registerSensor(String sensor_ID,String sensor_unit_ID) throws SQLException;
     /**
      * Method check the data source for all sensors which are registered under specific unit
-     * @param unit_ID ID of unit
+     * @param username username
      * @return Sensors registered under specific unit
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public ArrayList<String> getRegisteredAvailableSensors(String unit_ID) throws SQLException;
+    public ArrayList<String> getAvailableSensors(String username) throws SQLException;
     /**
      * Method modifies the data source by removing sensor from under a unit to which is registered
      * @param sensor_ID ID of sensor
@@ -216,5 +216,13 @@ public interface DataAccess {
      * @throws SQLException Exception is thrown when problem with query occurs
      */
     public void setIrrigationTime(String sensorID,String value) throws SQLException;
+    
+    /**
+     * 
+     * @param sensor_ID ID of sensor
+     * @return list containing ID and nickname of group
+     * @throws SQLException 
+     */
+    public ArrayList<String> getDeviceGroupQuery(String sensor_ID) throws SQLException;
 
 }

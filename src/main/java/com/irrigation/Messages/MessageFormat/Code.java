@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Security;
+package com.irrigation.Messages.MessageFormat;
+
+import java.io.Serializable;
 
 /**
  *
  * @author brune
  */
-public class TokenValidityTest {
-    
-    
-    
+public enum Code implements Serializable {
+    SUCCESS,
+    FAILURE,
 }

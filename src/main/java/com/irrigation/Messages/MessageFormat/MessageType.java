@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.Messages;
+package com.irrigation.Messages.MessageFormat;
 
 import java.io.Serializable;
 

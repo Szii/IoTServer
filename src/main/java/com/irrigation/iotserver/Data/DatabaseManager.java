@@ -218,11 +218,11 @@ public class DatabaseManager implements DataAccess {
          }
           @Override
          public String getThresoldQuery(String sensor_ID) throws SQLException{
-              String query = "SELECT* FROM sensors WHERE sensor_ID = " + "\"" +  sensor_ID + "\"";
+              String query = "SELECT* FROM devices WHERE device_ID = " + "\"" +  sensor_ID + "\"";
                PreparedStatement pst = connection.prepareStatement(query);
                ResultSet result = pst.executeQuery();
                  if(result.next()){
-                     String val = result.getString("thresold");
+                     String val = result.getString("device_treshold");
                      if(val == null){
                          val = "-1";
                      }
@@ -238,7 +238,7 @@ public class DatabaseManager implements DataAccess {
          
           @Override
            public void setThresoldQuery(String sensor_ID,String thresold) throws SQLException{
-              String query = " UPDATE sensors SET thresold = ? WHERE sensor_ID = " + "\"" + sensor_ID+ "\"";
+              String query = " UPDATE devices SET device_threshold = ? WHERE device_ID = " + "\"" + sensor_ID+ "\"";
                PreparedStatement pst = connection.prepareStatement(query);         
               try {    
                 pst.setString (1, thresold);
@@ -284,12 +284,12 @@ public class DatabaseManager implements DataAccess {
             ps.close();
            }
               
-          String query = " insert into measurment (sensor_ID,moisture,dateTime)"
+          String query = " insert into measurments (device_ID,date,value)"
              + " values (?, ?,?)";
            PreparedStatement pst = connection.prepareStatement(query);
            pst.setString (1, sensor_ID);
-           pst.setString (2, measure);
-           pst.setString (3, date);
+           pst.setString (2, date);
+           pst.setString (3, measure);
         
            pst.executeUpdate();
            pst.close();
@@ -316,18 +316,42 @@ public class DatabaseManager implements DataAccess {
            
          @Override
          public String lastQuery(String sensor_ID) throws SQLException{
-            String query = "SELECT* FROM measurment WHERE sensor_ID = " + "\"" +  sensor_ID + "\"";
+            String query = "SELECT* FROM measurments WHERE device_ID = " + "\"" +  sensor_ID + "\"";
           PreparedStatement pst = connection.prepareStatement(query);
            ResultSet result = pst.executeQuery();
         
            while(result.next()){
                if (result.isLast()){
-                     String val = result.getString("moisture");                          
+                     String val = result.getString("value");                          
                      pst.close();
                      return val;
                }      
            }
            return "";
+        }
+         
+         @Override
+         public ArrayList<String> getDeviceGroupQuery(String sensor_ID) throws SQLException{
+             ArrayList<String> measuredData = new ArrayList();
+             
+               String guery2 = "SELECT measurements.value,measurements.date FROM measurements LEFT JOIN devices ON devices.device_ID = measurements.device_ID WHERE devices.device_ID = ?";
+               String query = "SELECT * FROM `groups` LEFT JOIN `devices` ON `groups`.group_ID = `devices`.group_ID WHERE `devices`.device_ID = ?";
+              PreparedStatement pst = connection.prepareStatement(query);
+              pst.setString(1, sensor_ID);
+               ResultSet result = pst.executeQuery();
+               String val = "";
+                   while (result.next()){
+                        val = result.getString("group_ID");
+                        measuredData.add(val);
+                        val = result.getString("group_name");
+                        measuredData.add(val);
+                   }
+                   pst.close();
+                   if(measuredData.isEmpty()){
+                       measuredData.add("");
+                       measuredData.add("");
+                   }
+                   return measuredData;  
         }
          
          @Override
@@ -358,11 +382,11 @@ public class DatabaseManager implements DataAccess {
          
          @Override
          public String getSensorOwner(String sensorID) throws SQLException{
-             String query = "SELECT* FROM sensors WHERE sensor_ID = " + "\"" +  sensorID + "\"";
+             String query = "SELECT* FROM user_device WHERE device_ID = " + "\"" +  sensorID + "\"";
           PreparedStatement pst = connection.prepareStatement(query);
            ResultSet result = pst.executeQuery();
                if (result.next()){
-                     String val = result.getString("sensor_Unit_ID");
+                     String val = result.getString("username");
                      if(val == null){
                          val = "";
                      }
@@ -398,13 +422,16 @@ public class DatabaseManager implements DataAccess {
          }
         
         @Override
-        public void registerSensor(String sensor_ID,String sensor_unit_ID) throws SQLException{
-             String query = " UPDATE sensors SET sensor_unit_ID = ? WHERE sensor_ID = " + "\"" + sensor_ID+ "\"";
+        public void registerSensor(String sensor_ID,String username) throws SQLException{
+            
+            String query = " insert into user_device (user,device)"
+                        + " values (?, ?)";
               PreparedStatement pst = connection.prepareStatement(query);
               pst = connection.prepareStatement(query);
               
               try {    
-                pst.setString (1, sensor_unit_ID);
+                pst.setString (1, username);
+                pst.setString (2, sensor_ID);
                 pst.executeUpdate();
                 pst.close();
               } 
@@ -414,36 +441,34 @@ public class DatabaseManager implements DataAccess {
         }
         
         @Override
-        public ArrayList<String> getRegisteredAvailableSensors(String unit_ID) throws SQLException{
+        public ArrayList<String> getAvailableSensors(String username) throws SQLException{
             
          ArrayList<String> sensors = new ArrayList();
+         
+         
+         String query = "SELECT * FROM `user_device` LEFT JOIN `devices` ON `devices`.device_ID = user_device.device"
+                 + " LEFT JOIN `users` ON `users`.username = user_device.user"
+                 + " WHERE username = " + "\"" + username  + "\"";
 
-            
-         String query = "SELECT* FROM sensors WHERE sensor_unit_ID = " + "\"" + unit_ID  + "\"";
           PreparedStatement pst = connection.prepareStatement(query);
            ResultSet result = pst.executeQuery();
                while (result.next()){
-                    String val = result.getString("sensor_ID");
+                    String val = result.getString("device_ID");
                          System.out.println("got sensor");
                          sensors.add(val);      
                }
                pst.close();
-               System.out.println("No other registered sensors for unit: " + unit_ID);
+               System.out.println("No other registered sensors for unit: " + username);
                return sensors;
         }
         
         @Override
         public void unregisterSensorQuery(String sensor_ID) throws SQLException {
-             String query = " UPDATE sensors SET sensor_unit_ID = ?, nickname = ?,thresold = ?, irrigationTime = ? WHERE sensor_ID = ?";
+            String query ="DELETE from user_device WHERE device = " + "\"" + sensor_ID+ "\"";
               PreparedStatement pst = connection.prepareStatement(query);
               
               try {    
               
-                pst.setString (1,null);
-                pst.setString (2,null);
-                pst.setString (3,"-1");
-                pst.setString (4,"3");
-                pst.setString (5,sensor_ID);
                 pst.executeUpdate();
                 System.out.println("Sensor unregistered");
               } 
@@ -455,7 +480,7 @@ public class DatabaseManager implements DataAccess {
         
         @Override
         public void setSensorNickname (String sensor_ID,String nickname) throws SQLException{
-              String query = " UPDATE sensors SET nickname = ? WHERE sensor_ID = " + "\"" + sensor_ID+ "\"";
+              String query = " UPDATE devices SET device_name = ? WHERE device_ID = " + "\"" + sensor_ID+ "\"";
               PreparedStatement pst = connection.prepareStatement(query);
               
               try {    
@@ -491,17 +516,17 @@ public class DatabaseManager implements DataAccess {
         }
           @Override
            public String getSensorNickname (String sensor_ID) throws SQLException{
-              String query = "SELECT* FROM sensors WHERE sensor_ID = " + "\"" + sensor_ID  + "\"";
+              String query = "SELECT* FROM devices WHERE device_ID = " + "\"" + sensor_ID  + "\"";
               PreparedStatement pst = connection.prepareStatement(query);
                ResultSet result = pst.executeQuery();
                String val = "";
                    while (result.next()){
-                        val = result.getString("nickname");
+                        val = result.getString("device_name");
                         if(val == null){
                             val = "";
                         }
                          if(val.equals("")){  
-                             val = result.getString("sensor_ID");
+                             val = result.getString("device_ID");
                          }
 
                    }
@@ -531,15 +556,15 @@ public class DatabaseManager implements DataAccess {
     public ArrayList<String> getMeasurementDataQuery(String sensorID) throws SQLException {
         ArrayList<String> measuredData = new ArrayList<>();
         //String query = "SELECT* FROM measurment WHERE sensor_ID = ?";
-          String query = "SELECT measurment.moisture,measurment.dateTime FROM measurment LEFT JOIN sensors ON sensors.sensor_ID = measurment.sensor_ID WHERE sensors.sensor_ID = ?";
+          String query = "SELECT measurements.value,measurements.date FROM measurements LEFT JOIN devices ON devices.device_ID = measurements.device_ID WHERE devices.device_ID = ?";
               PreparedStatement pst = connection.prepareStatement(query);
               pst.setString(1, sensorID);
                ResultSet result = pst.executeQuery();
                String val = "";
                    while (result.next()){
-                        val = result.getString("moisture");
+                        val = result.getString("value");
                         measuredData.add(val);
-                        val = result.getString("dateTime");
+                        val = result.getString("date");
                         measuredData.add(val);
                    }
                    pst.close();
@@ -549,7 +574,7 @@ public class DatabaseManager implements DataAccess {
     @Override
     public ArrayList<String> getMeasurementDataInRange(String sensorID,String from, String to) throws SQLException {
         ArrayList<String> measuredData = new ArrayList<>();
-        String query = "SELECT* FROM measurment WHERE sensor_ID = ? AND dateTime BETWEEN ? AND ?";
+        String query = "SELECT* FROM measurments WHERE device_ID = ? AND date BETWEEN ? AND ?";
         
               PreparedStatement pst = connection.prepareStatement(query);
               pst.setString(1, sensorID);
@@ -558,9 +583,9 @@ public class DatabaseManager implements DataAccess {
                ResultSet result = pst.executeQuery();
                String val = "";
                    while (result.next()){
-                        val = result.getString("moisture");
+                        val = result.getString("value");
                         measuredData.add(val);
-                        val = result.getString("dateTime");
+                        val = result.getString("date");
                         measuredData.add(val);
                    }
                    pst.close();
@@ -569,11 +594,11 @@ public class DatabaseManager implements DataAccess {
 
     @Override
     public String getIrrigationTime(String sensorID) throws SQLException {
-      String query = "SELECT* FROM sensors WHERE sensor_ID = " + "\"" +  sensorID + "\"";
+      String query = "SELECT* FROM devices WHERE device_ID = " + "\"" +  sensorID + "\"";
                PreparedStatement pst = connection.prepareStatement(query);
                ResultSet result = pst.executeQuery();
                  if(result.next()){
-                     String val = result.getString("irrigationTime");
+                     String val = result.getString("device_irrigationTime");
                      if(val == null){
                          val = "-1";
                      }
@@ -589,7 +614,7 @@ public class DatabaseManager implements DataAccess {
     @Override
     public void setIrrigationTime(String sensorID, String value) throws SQLException {
         System.out.println("setting irrigation time, sensorID : " + sensorID + "value : " + value);
-            String query = " UPDATE sensors SET irrigationTime = ? WHERE sensor_ID = " + "\"" + sensorID+ "\"";
+            String query = " UPDATE devices SET device_irrigationTime = ? WHERE device_ID = " + "\"" + sensorID+ "\"";
                PreparedStatement pst = connection.prepareStatement(query);         
               try {    
                 pst.setString (1, value);

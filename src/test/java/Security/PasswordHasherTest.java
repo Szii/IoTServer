@@ -21,7 +21,6 @@ public class PasswordHasherTest {
         String password = "12345";
         String hash = PasswordHasher.getHash(password);
         
-        Assertions.assertTrue(PasswordHasher.compareIfPassowrdMatchesWithStoredHash(password, hash));
-    }
-    
+        Assertions.assertTrue(PasswordHasher.compareIfPassowrdMatchesWithStoredHash(password, hash));   
+    }    
 }
