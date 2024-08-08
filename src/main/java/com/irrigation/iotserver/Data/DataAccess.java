@@ -31,14 +31,14 @@ public interface DataAccess {
      * @return username from data source if present, if not returns empty string
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public String getUserQuery(String name) throws SQLException;
+    public boolean getUserQuery(String name) throws SQLException;
     /**
      * Method adds new entry to the data source 
      * @param name Name to be added
      * @param password password to be added
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public void addUserQuery(String name,String password)throws SQLException;
+    public boolean addUserQuery(String name,String password);
     /**
      * Method add a username to unit ID, registering unit to the user
      * @param unit_ID unit ID

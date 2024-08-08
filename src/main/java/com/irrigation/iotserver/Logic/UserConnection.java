@@ -69,16 +69,13 @@ public class UserConnection extends Thread{
                 sendMessage(new Payload());
             case CONFIRM_LOGIN:
                 System.out.println("Login attempt");
-                if(databaseManager.confirmLoginQuery(message.getContent().get(0), message.getContent().get(1)) == true){
-                   System.out.println("Sending success");
-                    sendMessage(new Payload(new ArrayList<String>(),message.getType(),Code.SUCCESS));
-                }
-                else{
-                     System.out.println("Sending failure");
-                    sendMessage(new Payload(new ArrayList<String>(),message.getType(),Code.FAILURE));
-                }
-                
-                
+                sendCodeAnswerToDatabaseRequest(databaseManager.confirmLoginQuery(message.getContent().get(0), message.getContent().get(1)),message.getType());
+            case GET_USER:
+                System.out.println("Does user exist?");
+                sendCodeAnswerToDatabaseRequest(databaseManager.getUserQuery(message.getContent().get(0)),message.getType());
+            case ADD_USER:
+                System.out.println("Adding user");
+                sendCodeAnswerToDatabaseRequest(databaseManager.addUserQuery(message.getContent().get(0),message.getContent().get(1)),message.getType()); 
                 
         }
     }
@@ -90,6 +87,19 @@ public class UserConnection extends Thread{
             Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    private void sendCodeAnswerToDatabaseRequest(boolean isRequestValid, MessageType requestType){
+        if(isRequestValid){
+                   System.out.println("Sending success");
+                    sendMessage(new Payload(new ArrayList<String>(),requestType,Code.SUCCESS));
+                }
+                else{
+                    System.out.println("Sending failure");
+                    sendMessage(new Payload(new ArrayList<String>(),requestType,Code.FAILURE));
+                }
+        
+    }
+   
     
     
     

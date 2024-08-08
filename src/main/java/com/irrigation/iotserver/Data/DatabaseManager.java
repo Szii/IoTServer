@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -46,7 +48,7 @@ public class DatabaseManager implements DataAccess {
         }
   
        @Override
-       public String getUserQuery(String name) throws SQLException{
+       public boolean getUserQuery(String name) throws SQLException{
             String query = "SELECT* FROM users WHERE name = " + "\"" +  name + "\"";
           PreparedStatement pst = connection.prepareStatement(query);
            ResultSet result = pst.executeQuery();
@@ -55,27 +57,33 @@ public class DatabaseManager implements DataAccess {
            if(result.next()){
            val = result.getString("name");
             pst.close();
-            return val; 
+            return true;
     
           }
            else{
                pst.close();
-               return "error";
+               return false;
            }
          }
          
          
          @Override
-        public void addUserQuery(String name,String password)throws SQLException{
-           String query = " insert into users (username,password)"
-             + " values (?, ?)";
-           PreparedStatement pst = connection.prepareStatement(query);
-           pst.setString (1, name);
-           pst.setString (2, password);
-          
-           pst.executeUpdate();
-           pst.close();
-       
+        public boolean addUserQuery(String name,String password){
+            try {
+                String query = " insert into users (username,password)"
+                        + " values (?, ?)";
+                PreparedStatement pst = connection.prepareStatement(query);
+                pst.setString (1, name);
+                pst.setString (2, password);
+
+                pst.executeUpdate();
+                pst.close();
+
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
           }
          
         @Override
