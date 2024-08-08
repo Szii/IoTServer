@@ -10,6 +10,7 @@ import com.irrigation.Messages.Code;
 import com.irrigation.Messages.MessageType;
 import com.irrigation.Messages.Payload;
 import com.irrigation.iotserver.Security.PasswordHasher;
+import com.irrigation.iotserver.Security.TokenGenerator;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -28,6 +29,7 @@ public class UserConnection extends Thread{
     Socket socket;
     ObjectInputStream objectInput;
     ObjectOutputStream objectOutput;
+    String userToken = "";
     
 
     public UserConnection(Socket socket, DataAccess databaseManager) {
@@ -47,7 +49,7 @@ public class UserConnection extends Thread{
                 Payload message;
                 message = ((Payload)objectInput.readObject());   //Blocking method
                 
-                if(message.getCode().equals(Code.FAILURE)){
+                if(message.getCode().equals(Code.FAILURE) || !message.getToken().equals(userToken)){
                     this.interrupt(); //end the conection
                 }
                 processMessage(message); //reacting to message
@@ -73,7 +75,10 @@ public class UserConnection extends Thread{
                 if(PasswordHasher.compareIfPassowrdMatchesWithStoredHash(
                         message.getContent().get(1), 
                         databaseManager.getPasswordQuery(message.getContent().get(0)))){
-                    sendCodeAnswerToDatabaseRequest(true, message.getType());
+                    userToken = TokenGenerator.generateToken();
+                    sendLoginConfirmationSuccess();
+                    System.out.println(userToken);
+
                 }
                 else{
                     sendCodeAnswerToDatabaseRequest(false, message.getType());
@@ -94,6 +99,7 @@ public class UserConnection extends Thread{
         }
     }
     
+    
     private void sendMessage(Payload message){
         try {
             objectOutput.writeObject(message);
@@ -102,17 +108,31 @@ public class UserConnection extends Thread{
         }
     }
     
+    private void sendLoginConfirmationSuccess(){
+        sendMessage(new Payload.PayloadBuilder(Code.SUCCESS)
+         .setToken(userToken)
+         .setType(MessageType.CONFIRM_LOGIN)
+         .build());
+        
+    }
+    
     private void sendCodeAnswerToDatabaseRequest(boolean isRequestValid, MessageType requestType){
         if(isRequestValid){
                    System.out.println("Sending success");
-                    sendMessage(new Payload(new ArrayList<String>(),requestType,Code.SUCCESS));
+                    sendMessage(new Payload.PayloadBuilder(Code.SUCCESS)
+                    .setType(requestType)
+                    .build());
                 }
                 else{
                     System.out.println("Sending failure");
-                    sendMessage(new Payload(new ArrayList<String>(),requestType,Code.FAILURE));
+                    sendMessage(new Payload.PayloadBuilder(Code.FAILURE)
+                    .setType(requestType)
+                    .build());
                 }
         
     }
+    
+    
    
     
     
