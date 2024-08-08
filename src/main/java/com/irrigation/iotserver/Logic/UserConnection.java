@@ -9,6 +9,7 @@ import com.irrigation.iotserver.Data.DataAccess;
 import com.irrigation.Messages.Code;
 import com.irrigation.Messages.MessageType;
 import com.irrigation.Messages.Payload;
+import com.irrigation.iotserver.Security.PasswordHasher;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -69,15 +70,25 @@ public class UserConnection extends Thread{
                 sendMessage(new Payload());
             case CONFIRM_LOGIN:
                 System.out.println("Login attempt");
-                sendCodeAnswerToDatabaseRequest(databaseManager.confirmLoginQuery(message.getContent().get(0), message.getContent().get(1)),message.getType());
+                if(PasswordHasher.compareIfPassowrdMatchesWithStoredHash(
+                        message.getContent().get(1), 
+                        databaseManager.getPasswordQuery(message.getContent().get(0), message.getContent().get(1)))){
+                    sendCodeAnswerToDatabaseRequest(true, message.getType());
+                }
+                else{
+                    sendCodeAnswerToDatabaseRequest(false, message.getType());
+                }
                 break;
             case GET_USER:
                 System.out.println("Does user exist?");
-                sendCodeAnswerToDatabaseRequest(databaseManager.getUserQuery(message.getContent().get(0)),message.getType());
+                sendCodeAnswerToDatabaseRequest(databaseManager.getUserQuery(
+                        message.getContent().get(0)),message.getType());
                 break;
             case ADD_USER:
                 System.out.println("Adding user");
-                sendCodeAnswerToDatabaseRequest(databaseManager.addUserQuery(message.getContent().get(0),message.getContent().get(1)),message.getType()); 
+                sendCodeAnswerToDatabaseRequest(databaseManager.addUserQuery(
+                        message.getContent().get(0),
+                        PasswordHasher.getHash(message.getContent().get(1))), message.getType()); 
                 break;
                 
         }

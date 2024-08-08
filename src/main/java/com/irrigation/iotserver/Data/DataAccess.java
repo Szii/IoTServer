@@ -18,13 +18,13 @@ import java.util.ArrayList;
  */
 public interface DataAccess {
     /**
-     * Method checks if credentials are present in the database
-     * @param name Username
-     * @param password Password
-     * @return Returns true if credentials are present in the database
-     * @throws SQLException Exception is thrown when problem with query occurs
+     * 
+     * @param name username
+     * @param password hashed password 
+     * @return hashed value representing password of user
+     * @throws SQLException 
      */
-    public boolean confirmLoginQuery(String name,String password) throws SQLException;
+    public String getPasswordQuery(String name,String password) throws SQLException;
     /**
      * Method returns username if name parameter is found in the data source
      * @param name Username
