@@ -49,13 +49,13 @@ public class DatabaseManager implements DataAccess {
   
        @Override
        public boolean getUserQuery(String name) throws SQLException{
-            String query = "SELECT* FROM users WHERE name = " + "\"" +  name + "\"";
+            String query = "SELECT* FROM users WHERE username = " + "\"" +  name + "\"";
           PreparedStatement pst = connection.prepareStatement(query);
            ResultSet result = pst.executeQuery();
           
            String val = "";
            if(result.next()){
-           val = result.getString("name");
+           val = result.getString("username");
             pst.close();
             return true;
     
@@ -68,12 +68,12 @@ public class DatabaseManager implements DataAccess {
          
          
          @Override
-        public boolean addUserQuery(String name,String password){
+        public boolean addUserQuery(String username,String password){
             try {
                 String query = " insert into users (username,password)"
                         + " values (?, ?)";
                 PreparedStatement pst = connection.prepareStatement(query);
-                pst.setString (1, name);
+                pst.setString (1, username);
                 pst.setString (2, password);
 
                 pst.executeUpdate();

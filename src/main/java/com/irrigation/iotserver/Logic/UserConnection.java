@@ -70,12 +70,15 @@ public class UserConnection extends Thread{
             case CONFIRM_LOGIN:
                 System.out.println("Login attempt");
                 sendCodeAnswerToDatabaseRequest(databaseManager.confirmLoginQuery(message.getContent().get(0), message.getContent().get(1)),message.getType());
+                break;
             case GET_USER:
                 System.out.println("Does user exist?");
                 sendCodeAnswerToDatabaseRequest(databaseManager.getUserQuery(message.getContent().get(0)),message.getType());
+                break;
             case ADD_USER:
                 System.out.println("Adding user");
                 sendCodeAnswerToDatabaseRequest(databaseManager.addUserQuery(message.getContent().get(0),message.getContent().get(1)),message.getType()); 
+                break;
                 
         }
     }
