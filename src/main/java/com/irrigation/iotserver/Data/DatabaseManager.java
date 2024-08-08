@@ -27,25 +27,21 @@ public class DatabaseManager implements DataAccess {
  
       
       @Override
-      public String getPasswordQuery(String username,String password) throws SQLException{
-         String query = "SELECT* FROM users WHERE username = ?" + "AND" + " password = ?";
+      public String getPasswordQuery(String username) throws SQLException{
+         String query = "SELECT* FROM users WHERE username = ?";
                 PreparedStatement pst;
                 pst = connection.prepareStatement(query);
                 pst.setString(1, username);
-                pst.setString(2,password);     
                 ResultSet result = pst.executeQuery();
- 
-                String val = "";
-
+                String value = "";
                 if(result.next()){
+                     value = result.getString("password");
                      pst.close();
-                     result.getString("password");
                 }
                 else{
                      pst.close();
-                     return "";
                 }
-                return "";
+                return value;
         }
   
        @Override

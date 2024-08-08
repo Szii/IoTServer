@@ -12,6 +12,23 @@
     <org.springframework.version>5.2.8.RELEASE</org.springframework.version>
 
     </properties>
+    
+        <build>
+        <plugins>
+           <plugin>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>2.19.1</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
+</plugin>
+        </plugins>
+    </build>
+    
     <dependencies>
         <dependency>
         <groupId>org.thethingsnetwork</groupId>
@@ -28,6 +45,12 @@
         <artifactId>spring-security-crypto</artifactId>
         <version>5.3.13.RELEASE</version>
     </dependency>
+    <dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-engine</artifactId>
+    <version>5.11.0-M2</version>
+    <scope>test</scope>
+</dependency>
 
 
 <dependency>

@@ -23,7 +23,16 @@ public class PasswordHasher {
     }
     
     public static boolean compareIfPassowrdMatchesWithStoredHash(String password, String hash){
-        return BCrypt.checkpw(password, hash);
+        try{
+           return BCrypt.checkpw(password, hash); 
+        }
+        catch(IllegalArgumentException e) {
+            System.out.println("Hash is: " + hash);
+            System.out.println(e);
+            System.out.println("Invalid hash when comapring user password");
+            return false;
+        }
+        
   
     }
 }

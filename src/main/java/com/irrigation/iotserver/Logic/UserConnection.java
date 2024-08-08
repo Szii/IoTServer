@@ -72,7 +72,7 @@ public class UserConnection extends Thread{
                 System.out.println("Login attempt");
                 if(PasswordHasher.compareIfPassowrdMatchesWithStoredHash(
                         message.getContent().get(1), 
-                        databaseManager.getPasswordQuery(message.getContent().get(0), message.getContent().get(1)))){
+                        databaseManager.getPasswordQuery(message.getContent().get(0)))){
                     sendCodeAnswerToDatabaseRequest(true, message.getType());
                 }
                 else{

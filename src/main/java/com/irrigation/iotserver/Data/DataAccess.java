@@ -20,11 +20,10 @@ public interface DataAccess {
     /**
      * 
      * @param name username
-     * @param password hashed password 
      * @return hashed value representing password of user
      * @throws SQLException 
      */
-    public String getPasswordQuery(String name,String password) throws SQLException;
+    public String getPasswordQuery(String name) throws SQLException;
     /**
      * Method returns username if name parameter is found in the data source
      * @param name Username
