@@ -134,8 +134,9 @@ public interface DataAccess {
      * @param sensor_ID ID of sensor
      * @param sensor_unit_ID ID of unit
      * @throws SQLException Exception is thrown when problem with query occurs
+     * @return true if device is registered successfully
      */
-    public void registerSensor(String sensor_ID,String sensor_unit_ID) throws SQLException;
+    public boolean registerDeviceQuery(String sensor_ID,String sensor_unit_ID) throws SQLException;
     /**
      * Method check the data source for all sensors which are registered under specific unit
      * @param username username
@@ -144,11 +145,12 @@ public interface DataAccess {
      */
     public ArrayList<String> getAvailableSensors(String username) throws SQLException;
     /**
-     * Method modifies the data source by removing sensor from under a unit to which is registered
+     * Method modifies the data source by removing sensor from under a user to which is registered
      * @param sensor_ID ID of sensor
+     * @param username name of user
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public void unregisterSensorQuery(String sensor_ID) throws SQLException;
+    public void unregisterDeviceQuery(String sensor_ID,String username) throws SQLException;
     /**
      * Methods modifies the data source by setting the nickname for sensor
      * @param sensor_ID ID of sensor

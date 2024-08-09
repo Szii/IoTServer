@@ -19,7 +19,7 @@ public class Device implements Serializable  {
     private final String group;
     private final String irrigationTime;
     private final String threshold;
-    private String date;
+    private final String date;
 
     public String getDate() {
         return date;

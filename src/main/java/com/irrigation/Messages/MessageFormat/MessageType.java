@@ -36,7 +36,7 @@ public enum MessageType implements Serializable  {
     /**
      * Registering new sensor
      */
-    REGISTER_SENSOR,
+    REGISTER_DEVICE,
     /**
      * Gettings the moisture of the sensor
      */
@@ -48,7 +48,7 @@ public enum MessageType implements Serializable  {
     /**
      * Unregistering a sensor
      */
-    UNREGISTER_SENSOR,
+    UNREGISTER_DEVICE,
     /**
      * Getting a owner of sensor
      */

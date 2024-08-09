@@ -112,6 +112,13 @@ public class UserConnection extends Thread{
             case SET_THRESOLD:
                 databaseManager.setThresoldQuery((String)message.getContent().get(0), (String)message.getContent().get(1));
             break;
+            case REGISTER_DEVICE: 
+                sendRegisterDeviceConfirmation(message);
+            break;
+            case UNREGISTER_DEVICE:
+                databaseManager.unregisterDeviceQuery((String)message.getContent().get(0), (String)message.getContent().get(1));
+            break;
+            
 
         }
     }
@@ -159,6 +166,21 @@ public class UserConnection extends Thread{
          .build());
         
     }
+    
+    private void sendRegisterDeviceConfirmation(Payload message){
+        try {
+            sendMessage(new Payload.PayloadBuilder()
+                    .setCode(returnCodeSuccessOnTrue(databaseManager.registerDeviceQuery((String)message.getContent().get(0), (String)message.getContent().get(1))))
+                    .setType(MessageType.REGISTER_DEVICE)
+                    .build());
+        } catch (SQLException ex) {
+            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private Code returnCodeSuccessOnTrue(boolean statement){
+        return statement ? Code.SUCCESS : Code.FAILURE;
+    } 
     
     private void sendCodeAnswerToDatabaseRequest(boolean isRequestValid, MessageType requestType){
         if(isRequestValid){

@@ -422,7 +422,7 @@ public class DatabaseManager implements DataAccess {
          }
         
         @Override
-        public void registerSensor(String sensor_ID,String username) throws SQLException{
+        public boolean registerDeviceQuery(String sensor_ID,String username) throws SQLException{
             
             String query = " insert into user_device (user,device)"
                         + " values (?, ?)";
@@ -437,7 +437,10 @@ public class DatabaseManager implements DataAccess {
               } 
               catch (SQLException ex) {
                  System.out.println(ex);
+                 return false;
              }
+               System.out.println("Sensor added returning true");
+             return true;
         }
         
         @Override
@@ -463,8 +466,8 @@ public class DatabaseManager implements DataAccess {
         }
         
         @Override
-        public void unregisterSensorQuery(String sensor_ID) throws SQLException {
-            String query ="DELETE from user_device WHERE device = " + "\"" + sensor_ID+ "\"";
+        public void unregisterDeviceQuery(String sensor_ID, String username) throws SQLException {
+            String query ="DELETE from user_device WHERE device = " + "\"" + sensor_ID+ "\" AND user = " + "\"" + username+ "\"";
               PreparedStatement pst = connection.prepareStatement(query);
               
               try {    
@@ -568,6 +571,10 @@ public class DatabaseManager implements DataAccess {
                         measuredData.add(val);
                    }
                    pst.close();
+                   if(measuredData.isEmpty()){
+                       measuredData.add("");
+                       measuredData.add("");
+                   }
                    return measuredData;    
     }
     
