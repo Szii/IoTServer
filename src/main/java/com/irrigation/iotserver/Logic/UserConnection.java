@@ -96,15 +96,23 @@ public class UserConnection extends Thread{
                 sendCodeAnswerToDatabaseRequest(databaseManager.addUserQuery((String) message.getContent().get(0),
                         PasswordHasher.getHash((String) message.getContent().get(1))), message.getType()); 
             break;
-            case GET_AVAILABLE_REGISTERED_SENSORS:
+            case GET_AVAILABLE_REGISTERED_DEVICES:
                 sendMessage(new Payload.PayloadBuilder<Payload>()
                         .setCode(Code.SUCCESS)
                         .setObject(getAvailableDevicesBasedOnUsername((String) message.getContent().get(0)))
-                        .setType(MessageType.GET_AVAILABLE_REGISTERED_SENSORS)
+                        .setType(MessageType.GET_AVAILABLE_REGISTERED_DEVICES)
                         .build());
             break;
-            
-                
+            case SET_IRRIGATION_TIME:
+                databaseManager.setIrrigationTime((String)message.getContent().get(0), (String)message.getContent().get(1));
+            break;
+            case SET_DEVICE_NICKNAME:
+                databaseManager.setSensorNickname((String)message.getContent().get(0), (String)message.getContent().get(1));
+            break;
+            case SET_THRESOLD:
+                databaseManager.setThresoldQuery((String)message.getContent().get(0), (String)message.getContent().get(1));
+            break;
+
         }
     }
     

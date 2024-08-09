@@ -56,19 +56,11 @@ public enum MessageType implements Serializable  {
     /**
      * Getting a threshold of sensor
      */
-    GET_THRESOLD,
-    /**
-     * Setting a threshold of sensor
-     */
     SET_THRESOLD,
     /**
      * Setting a nickname of sensor
      */
-    SET_SENSOR_NICKNAME,
-    /**
-     * Getting a nickname of sensor
-     */
-    GET_SENSOR_NICKNAME,
+    SET_DEVICE_NICKNAME,
     /**
      * Getting all measured data by single sensor
      */
@@ -77,33 +69,16 @@ public enum MessageType implements Serializable  {
      * Getting measured data in time interval by a single sensor
      */
     GET_MEASUREMENT_DATA_IN_RANGE,    
-    /**
-     * Check if unit is in the data source
      
     /**
      * Gettings all sensors register under specific unit
      */
-    GET_AVAILABLE_REGISTERED_SENSORS,
-    /**
-     * Setting unit nickname
-     */
-    SET_UNIT_NICKNAME,
-    /**
-     * Getting all unregistered sensors
-     */
-    GET_SENSORS_IN_RANGE,
-    /**
-     * Getting if sensor is online
-     */
-    IS_SENSOR_ACTIVE,
+    GET_AVAILABLE_REGISTERED_DEVICES,
+
     /**
      * Sets a time period for which is valve opened for a sensor
      */
     SET_IRRIGATION_TIME,
-    /**
-     * Gets a time period for which is valve opened for a sensor
-     */
-    GET_IRRIGATION_TIME,
     /**
      * Error signalizing something did not went according to a plan
      */

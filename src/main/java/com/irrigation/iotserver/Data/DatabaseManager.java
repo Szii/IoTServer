@@ -238,7 +238,7 @@ public class DatabaseManager implements DataAccess {
          
           @Override
            public void setThresoldQuery(String sensor_ID,String thresold) throws SQLException{
-              String query = " UPDATE devices SET device_threshold = ? WHERE device_ID = " + "\"" + sensor_ID+ "\"";
+              String query = " UPDATE devices SET device_treshold = ? WHERE device_ID = " + "\"" + sensor_ID+ "\"";
                PreparedStatement pst = connection.prepareStatement(query);         
               try {    
                 pst.setString (1, thresold);
