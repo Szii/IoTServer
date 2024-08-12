@@ -330,6 +330,94 @@ public class DatabaseManager implements DataAccess {
            return "";
         }
          
+         public ArrayList<String> getAllDevicesInGroupQuery(String group, String username) throws SQLException{
+             ArrayList<String> device_IDs = new ArrayList();
+             String query = "SELECT * FROM `groups` WHERE group_ID = ? AND username = ?";
+              PreparedStatement pst = connection.prepareStatement(query);
+              pst.setString(1, group);
+              pst.setString(1, username);
+              ResultSet result = pst.executeQuery();
+                  while (result.next()){
+                        device_IDs.add(result.getString("device_ID"));
+             }
+             pst.close();
+                   if(device_IDs.isEmpty()){
+                       device_IDs.add(result.getString(""));
+                   }     
+             return device_IDs;
+         }
+         
+         public boolean addDeviceToGroup(String group,String device_ID) throws SQLException{
+             String query = " UPDATE devices SET device_group = ? WHERE device_ID = " + "\"" + device_ID+ "\"";
+             
+             PreparedStatement pst = connection.prepareStatement(query); 
+              try {    
+                pst.setString (1,group);
+                pst.executeUpdate();
+                pst.close();
+                return true;
+              } 
+              catch (SQLException ex) {
+                 System.out.println(ex);
+                 return false;
+
+             }
+         }
+         
+         public boolean removeDeviceFromGroupQuery(String device_ID) throws SQLException{
+             String query = " UPDATE devices SET device_group = ? WHERE device_ID = " + "\"" + device_ID+ "\"";
+             
+             PreparedStatement pst = connection.prepareStatement(query); 
+              try {    
+                pst.setString (1,"");
+                pst.executeUpdate();
+                pst.close();
+                return true;
+              } 
+              catch (SQLException ex) {
+                 System.out.println(ex);
+                 return false;
+
+             }
+         }
+         
+         public boolean addGroupQuery(String group_ID,String username) throws SQLException{
+              String query = " insert into groups (groupname,username)"
+                        + " values (?, ?)";
+              PreparedStatement pst = connection.prepareStatement(query);
+              pst = connection.prepareStatement(query);
+              
+              try {    
+                pst.setString (1, group_ID);
+                pst.setString (2, username);
+                pst.executeUpdate();
+                pst.close();
+              } 
+              catch (SQLException ex) {
+                 System.out.println(ex);
+                 return false;
+             }
+               System.out.println("Sensor added returning true");
+             return true;
+         }
+         
+         public boolean removeGroupQuery(String group_name, String username) throws SQLException{
+              String query ="DELETE from groups WHERE group_name = " + "\"" + group_name+ "\" AND username = " + "\"" + username+ "\"";
+              PreparedStatement pst = connection.prepareStatement(query);
+              
+              try {    
+              
+                pst.executeUpdate();
+                System.out.println("Sensor unregistered");
+              } 
+              catch (SQLException ex) {
+                System.out.println(ex);
+                return false;
+             
+             }
+             return true;
+         }
+         
          @Override
          public ArrayList<String> getDeviceGroupQuery(String sensor_ID) throws SQLException{
              ArrayList<String> measuredData = new ArrayList();
