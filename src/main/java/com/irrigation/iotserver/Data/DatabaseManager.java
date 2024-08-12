@@ -329,7 +329,7 @@ public class DatabaseManager implements DataAccess {
            }
            return "";
         }
-         
+         @Override
          public ArrayList<String> getAllDevicesInGroupQuery(String group, String username) throws SQLException{
              ArrayList<String> device_IDs = new ArrayList();
              String query = "SELECT * FROM `groups` WHERE group_ID = ? AND username = ?";
@@ -346,7 +346,7 @@ public class DatabaseManager implements DataAccess {
                    }     
              return device_IDs;
          }
-         
+         @Override
          public boolean addDeviceToGroup(String group,String device_ID) throws SQLException{
              String query = " UPDATE devices SET device_group = ? WHERE device_ID = " + "\"" + device_ID+ "\"";
              
@@ -363,7 +363,7 @@ public class DatabaseManager implements DataAccess {
 
              }
          }
-         
+         @Override
          public boolean removeDeviceFromGroupQuery(String device_ID) throws SQLException{
              String query = " UPDATE devices SET device_group = ? WHERE device_ID = " + "\"" + device_ID+ "\"";
              
@@ -380,7 +380,7 @@ public class DatabaseManager implements DataAccess {
 
              }
          }
-         
+         @Override
          public boolean addGroupQuery(String group_ID,String username) throws SQLException{
               String query = " insert into groups (groupname,username)"
                         + " values (?, ?)";
@@ -400,7 +400,7 @@ public class DatabaseManager implements DataAccess {
                System.out.println("Sensor added returning true");
              return true;
          }
-         
+         @Override
          public boolean removeGroupQuery(String group_name, String username) throws SQLException{
               String query ="DELETE from groups WHERE group_name = " + "\"" + group_name+ "\" AND username = " + "\"" + username+ "\"";
               PreparedStatement pst = connection.prepareStatement(query);
