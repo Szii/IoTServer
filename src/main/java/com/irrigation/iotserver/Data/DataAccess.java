@@ -227,6 +227,8 @@ public interface DataAccess {
      */
     public ArrayList<String> getDeviceGroupQuery(String sensor_ID) throws SQLException;
     
+    public ArrayList<String> getGroupsQuery(String username) throws SQLException;
+    
     public ArrayList<String> getAllDevicesInGroupQuery(String group, String username) throws SQLException;
          
     public boolean addDeviceToGroup(String group,String device_ID) throws SQLException;
@@ -236,6 +238,8 @@ public interface DataAccess {
     public boolean addGroupQuery(String group_ID,String username) throws SQLException;
     
     public boolean removeGroupQuery(String group_name, String username) throws SQLException;
+    
+    public boolean changeGroupName(String username, String oldGroup,String newGroup) throws SQLException;
 
 
 

@@ -119,10 +119,29 @@ public class UserConnection extends Thread{
                 databaseManager.unregisterDeviceQuery((String)message.getContent().get(0), (String)message.getContent().get(1));
             break;
             case GET_GROUPS:
+                 sendMessage(new Payload.PayloadBuilder<Payload>()
+                        .setCode(Code.SUCCESS)
+                        .setContent(databaseManager.getGroupsQuery((String) message.getContent().get(0)))
+                        .setType(MessageType.GET_GROUPS)
+                        .build());
             break;
-            case UPDATE_GROUP:
+            case GET_DEVICES_IN_GROUP:
+                sendMessage(new Payload.PayloadBuilder<Payload>()
+                        .setCode(Code.SUCCESS)
+                        .setObject(getAvailableDevicesBasedOnUsernameAndGroup((String) message.getContent().get(0),(String) message.getContent().get(1)))
+                        .setType(MessageType.GET_DEVICES_IN_GROUP)
+                        .build());
+                        
+                
+            break;
+            case CHANGE_DEVICE_GROUP:
+                databaseManager.addDeviceToGroup((String) message.getContent().get(0),(String) message.getContent().get(1));
+            break;
+            case CHANGE_GROUP_NAME:
+                databaseManager.changeGroupName((String) message.getContent().get(0),(String) message.getContent().get(1),(String) message.getContent().get(2));
             break;
             case DELETE_GROUP:
+                 databaseManager.removeGroupQuery((String) message.getContent().get(0),(String) message.getContent().get(1));
             break;
             
 
@@ -134,6 +153,31 @@ public class UserConnection extends Thread{
          ArrayList<Device> devices = new ArrayList();
         try {
             for (String sensorID : databaseManager.getAvailableSensors(username)){
+                Device device = new Device.DeviceBuilder()
+                        .setID(sensorID)
+                        .setNickname(databaseManager.getSensorNickname(sensorID))
+                        .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
+                        .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(0))
+                        .setLastMeasuredValue(databaseManager.getMeasurementDataQuery(sensorID).get(0))
+                        .setThreshold(databaseManager.getThresoldQuery(sensorID))
+                        .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
+                        .build();
+                
+                devices.add(device);
+
+            }
+            return devices;
+                    
+                    } catch (SQLException ex) {
+            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            return devices;
+        }
+    }
+    
+        private ArrayList<Device> getAvailableDevicesBasedOnUsernameAndGroup(String username,String group){
+         ArrayList<Device> devices = new ArrayList();
+        try {
+            for (String sensorID :  databaseManager.getAllDevicesInGroupQuery(group,username)){
                 Device device = new Device.DeviceBuilder()
                         .setID(sensorID)
                         .setNickname(databaseManager.getSensorNickname(sensorID))

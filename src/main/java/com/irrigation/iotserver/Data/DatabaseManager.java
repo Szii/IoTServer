@@ -120,8 +120,8 @@ public class DatabaseManager implements DataAccess {
                         } catch (SQLException ex) {
                          //   out.println("error");
                             System.out.println(ex);
-                        }
-                    }
+                        } 
+                   }
 
                 }      
             } 
@@ -720,9 +720,35 @@ public class DatabaseManager implements DataAccess {
              }
               pst.close();
     }
-
- 
     
+    @Override
+    public ArrayList<String> getGroupsQuery(String username) throws SQLException{
+              String query = "SELECT* FROM groups WHERE username = " + "\"" +  username + "\"";
+               PreparedStatement pst = connection.prepareStatement(query);
+               ResultSet result = pst.executeQuery();
+               ArrayList<String> groups = new ArrayList();
+               while (result.next()){
+                    String val = result.getString("group_name");
+                    System.out.println("got group: " + val);
+                    groups.add(val);      
+               }
+               pst.close();
+               return groups;
+    }
     
+    public boolean changeGroupName(String username, String oldGroup,String newGroup) throws SQLException {
+        
+            String query = " UPDATE groups SET group_name = ? WHERE usernmae = " + "\"" + username + "\" AND group_name = " + "\"" + oldGroup + "\"";
+            PreparedStatement pst = connection.prepareStatement(query);
+            try {
+                pst.setString (1, newGroup);
+                pst.executeUpdate();
+                pst.close();
+                return true;
+                       
+            }catch (SQLException ex) {
+              return false;
+            }    
+    }
     
 }
