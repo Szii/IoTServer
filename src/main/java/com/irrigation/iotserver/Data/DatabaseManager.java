@@ -347,8 +347,11 @@ public class DatabaseManager implements DataAccess {
              return device_IDs;
          }
          @Override
-         public boolean addDeviceToGroup(String group,String device_ID) throws SQLException{
-             String query = " UPDATE devices SET device_group = ? WHERE device_ID = " + "\"" + device_ID+ "\"";
+         public boolean addDeviceToGroup(String device_ID,String group) throws SQLException{
+             System.out.println("adding device " + device_ID + " to group: " + group);
+                
+             
+             String query = " UPDATE devices SET group_ID = ? WHERE device_ID = " + "\"" + device_ID+ "\"";
              
              PreparedStatement pst = connection.prepareStatement(query); 
               try {    
@@ -418,9 +421,22 @@ public class DatabaseManager implements DataAccess {
          }
          
          @Override
+         public String getGroupID(String username, String group) throws SQLException{
+             String query = "SELECT* FROM `groups` WHERE username = " + "\"" +  username + "\" AND group_name = " + "\"" +  group + "\"";
+             PreparedStatement pst = connection.prepareStatement(query);
+             ResultSet result = pst.executeQuery();
+             String val;
+             if (result.next()){
+                     val = result.getString("group_ID");
+                     return val;
+             } 
+             else return "";
+         }
+         
+         @Override
          public ArrayList<String> getDeviceGroupQuery(String sensor_ID) throws SQLException{
-             ArrayList<String> measuredData = new ArrayList();
-             
+             ArrayList<String> group = new ArrayList();
+             System.out.println("Finding group for device: " + sensor_ID );
                String guery2 = "SELECT measurements.value,measurements.date FROM measurements LEFT JOIN devices ON devices.device_ID = measurements.device_ID WHERE devices.device_ID = ?";
                String query = "SELECT * FROM `groups` LEFT JOIN `devices` ON `groups`.group_ID = `devices`.group_ID WHERE `devices`.device_ID = ?";
               PreparedStatement pst = connection.prepareStatement(query);
@@ -429,16 +445,16 @@ public class DatabaseManager implements DataAccess {
                String val = "";
                    while (result.next()){
                         val = result.getString("group_ID");
-                        measuredData.add(val);
+                        group.add(val);
                         val = result.getString("group_name");
-                        measuredData.add(val);
+                        group.add(val);
                    }
                    pst.close();
-                   if(measuredData.isEmpty()){
-                       measuredData.add("");
-                       measuredData.add("");
+                   if(group.isEmpty()){
+                       group.add("");
+                       group.add("");
                    }
-                   return measuredData;  
+                   return group;  
         }
          
          @Override
@@ -723,7 +739,7 @@ public class DatabaseManager implements DataAccess {
     
     @Override
     public ArrayList<String> getGroupsQuery(String username) throws SQLException{
-              String query = "SELECT* FROM groups WHERE username = " + "\"" +  username + "\"";
+              String query = "SELECT* FROM diplomova_prace_db.groups WHERE username = " + "\"" +  username + "\"";
                PreparedStatement pst = connection.prepareStatement(query);
                ResultSet result = pst.executeQuery();
                ArrayList<String> groups = new ArrayList();
@@ -736,6 +752,7 @@ public class DatabaseManager implements DataAccess {
                return groups;
     }
     
+    @Override
     public boolean changeGroupName(String username, String oldGroup,String newGroup) throws SQLException {
         
             String query = " UPDATE groups SET group_name = ? WHERE usernmae = " + "\"" + username + "\" AND group_name = " + "\"" + oldGroup + "\"";

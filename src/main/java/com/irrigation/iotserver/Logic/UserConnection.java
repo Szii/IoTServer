@@ -135,7 +135,11 @@ public class UserConnection extends Thread{
                 
             break;
             case CHANGE_DEVICE_GROUP:
-                databaseManager.addDeviceToGroup((String) message.getContent().get(0),(String) message.getContent().get(1));
+                String groupID = databaseManager.getGroupID((String) message.getContent().get(0),(String) message.getContent().get(2));
+                databaseManager.addDeviceToGroup(
+                        (String) message.getContent().get(1),
+                        groupID);
+                sendCodeAnswerToDatabaseRequest(true, message.getType());
             break;
             case CHANGE_GROUP_NAME:
                 databaseManager.changeGroupName((String) message.getContent().get(0),(String) message.getContent().get(1),(String) message.getContent().get(2));
@@ -157,7 +161,7 @@ public class UserConnection extends Thread{
                         .setID(sensorID)
                         .setNickname(databaseManager.getSensorNickname(sensorID))
                         .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
-                        .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(0))
+                        .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(1))
                         .setLastMeasuredValue(databaseManager.getMeasurementDataQuery(sensorID).get(0))
                         .setThreshold(databaseManager.getThresoldQuery(sensorID))
                         .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
@@ -182,7 +186,7 @@ public class UserConnection extends Thread{
                         .setID(sensorID)
                         .setNickname(databaseManager.getSensorNickname(sensorID))
                         .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
-                        .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(0))
+                        .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(1))
                         .setLastMeasuredValue(databaseManager.getMeasurementDataQuery(sensorID).get(0))
                         .setThreshold(databaseManager.getThresoldQuery(sensorID))
                         .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
