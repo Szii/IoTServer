@@ -82,5 +82,11 @@ public enum MessageType implements Serializable  {
     /**
      * Error signalizing something did not went according to a plan
      */
+    GET_GROUPS,
+    
+    UPDATE_GROUP,
+   
+    DELETE_GROUP,
+
     ERROR
 }

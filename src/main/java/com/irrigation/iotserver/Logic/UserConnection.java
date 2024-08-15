@@ -118,6 +118,12 @@ public class UserConnection extends Thread{
             case UNREGISTER_DEVICE:
                 databaseManager.unregisterDeviceQuery((String)message.getContent().get(0), (String)message.getContent().get(1));
             break;
+            case GET_GROUPS:
+            break;
+            case UPDATE_GROUP:
+            break;
+            case DELETE_GROUP:
+            break;
             
 
         }

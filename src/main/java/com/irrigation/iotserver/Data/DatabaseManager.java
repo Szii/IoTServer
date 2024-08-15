@@ -385,7 +385,6 @@ public class DatabaseManager implements DataAccess {
               String query = " insert into groups (groupname,username)"
                         + " values (?, ?)";
               PreparedStatement pst = connection.prepareStatement(query);
-              pst = connection.prepareStatement(query);
               
               try {    
                 pst.setString (1, group_ID);
