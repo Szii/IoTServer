@@ -126,9 +126,10 @@ public class UserConnection extends Thread{
                         .build());
             break;
             case GET_DEVICES_IN_GROUP:
+                String group_ID = databaseManager.getGroupID((String) message.getContent().get(0),(String) message.getContent().get(1));
                 sendMessage(new Payload.PayloadBuilder<Payload>()
                         .setCode(Code.SUCCESS)
-                        .setObject(getAvailableDevicesBasedOnUsernameAndGroup((String) message.getContent().get(0),(String) message.getContent().get(1)))
+                        .setObject(getAvailableDevicesBasedOnUsernameAndGroup(group_ID))
                         .setType(MessageType.GET_DEVICES_IN_GROUP)
                         .build());
                         
@@ -178,10 +179,10 @@ public class UserConnection extends Thread{
         }
     }
     
-        private ArrayList<Device> getAvailableDevicesBasedOnUsernameAndGroup(String username,String group){
+        private ArrayList<Device> getAvailableDevicesBasedOnUsernameAndGroup(String group){
          ArrayList<Device> devices = new ArrayList();
         try {
-            for (String sensorID :  databaseManager.getAllDevicesInGroupQuery(group,username)){
+            for (String sensorID :  databaseManager.getAllDevicesInGroupQuery(group)){
                 Device device = new Device.DeviceBuilder()
                         .setID(sensorID)
                         .setNickname(databaseManager.getSensorNickname(sensorID))

@@ -229,7 +229,7 @@ public interface DataAccess {
     
     public ArrayList<String> getGroupsQuery(String username) throws SQLException;
     
-    public ArrayList<String> getAllDevicesInGroupQuery(String group, String username) throws SQLException;
+    public ArrayList<String> getAllDevicesInGroupQuery(String group) throws SQLException;
          
     public boolean addDeviceToGroup (String device_ID,String group) throws SQLException;
 

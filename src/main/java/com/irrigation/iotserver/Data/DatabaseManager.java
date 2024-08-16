@@ -330,20 +330,16 @@ public class DatabaseManager implements DataAccess {
            return "";
         }
          @Override
-         public ArrayList<String> getAllDevicesInGroupQuery(String group, String username) throws SQLException{
+         public ArrayList<String> getAllDevicesInGroupQuery(String group) throws SQLException{
              ArrayList<String> device_IDs = new ArrayList();
-             String query = "SELECT * FROM `groups` WHERE group_ID = ? AND username = ?";
+             String query = "SELECT * FROM devices WHERE group_ID = ?";
               PreparedStatement pst = connection.prepareStatement(query);
               pst.setString(1, group);
-              pst.setString(1, username);
               ResultSet result = pst.executeQuery();
                   while (result.next()){
                         device_IDs.add(result.getString("device_ID"));
              }
-             pst.close();
-                   if(device_IDs.isEmpty()){
-                       device_IDs.add(result.getString(""));
-                   }     
+             pst.close();  
              return device_IDs;
          }
          @Override
