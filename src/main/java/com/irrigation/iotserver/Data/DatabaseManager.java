@@ -680,7 +680,7 @@ public class DatabaseManager implements DataAccess {
     @Override
     public ArrayList<String> getMeasurementDataInRange(String sensorID,String from, String to) throws SQLException {
         ArrayList<String> measuredData = new ArrayList<>();
-        String query = "SELECT* FROM measurments WHERE device_ID = ? AND date BETWEEN ? AND ?";
+        String query = "SELECT* FROM measurements WHERE device_ID = ? AND date BETWEEN ? AND ?";
         
               PreparedStatement pst = connection.prepareStatement(query);
               pst.setString(1, sensorID);

@@ -103,6 +103,24 @@ public class UserConnection extends Thread{
                         .setType(MessageType.GET_AVAILABLE_REGISTERED_DEVICES)
                         .build());
             break;
+            case GET_MEASUREMENT_DATA:
+                sendMessage(new Payload.PayloadBuilder<Payload>()
+                        .setCode(Code.SUCCESS)
+                        .setContent(databaseManager.getMeasurementDataQuery((String)message.getContent().get(0)))
+                        .setType(MessageType.GET_MEASUREMENT_DATA)
+                        .build());
+            break;
+            case GET_MEASUREMENT_DATA_IN_RANGE:
+                sendMessage(new Payload.PayloadBuilder<Payload>()
+                        .setCode(Code.SUCCESS)
+                        .setContent(databaseManager.getMeasurementDataInRange
+                                            ((String)message.getContent().get(0),
+                                            (String)message.getContent().get(1),
+                                            (String)message.getContent().get(2)))
+                        .setType(MessageType.GET_MEASUREMENT_DATA_IN_RANGE)
+                        .build()); 
+            break;
+            
             case SET_IRRIGATION_TIME:
                 databaseManager.setIrrigationTime((String)message.getContent().get(0), (String)message.getContent().get(1));
             break;

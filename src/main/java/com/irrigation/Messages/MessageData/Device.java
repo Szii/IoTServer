@@ -60,6 +60,10 @@ public class Device implements Serializable  {
         return threshold;
     }
     
+    @Override
+    public String toString(){
+        return nickname == null ?  ID :  nickname;
+    }
     
     
    public static class DeviceBuilder{
@@ -118,3 +122,4 @@ public class Device implements Serializable  {
        
     
 }
+
