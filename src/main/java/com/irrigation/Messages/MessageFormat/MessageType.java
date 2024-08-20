@@ -91,6 +91,8 @@ public enum MessageType implements Serializable  {
     CHANGE_DEVICE_GROUP,
 
     DELETE_GROUP,
+        
+    CREATE_GROUP,
 
     ERROR
 }

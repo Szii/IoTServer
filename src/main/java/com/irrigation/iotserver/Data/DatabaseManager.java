@@ -399,14 +399,31 @@ public class DatabaseManager implements DataAccess {
              return true;
          }
          @Override
-         public boolean removeGroupQuery(String group_name, String username) throws SQLException{
-              String query ="DELETE from groups WHERE group_name = " + "\"" + group_name+ "\" AND username = " + "\"" + username+ "\"";
-              PreparedStatement pst = connection.prepareStatement(query);
+         public boolean removeGroupQuery(String username, String group_name) throws SQLException{
+             String group_ID = getGroupID(username,group_name);
+             String query1 = " UPDATE devices SET group_ID = ? WHERE group_ID = " + "\"" + group_ID+ "\"";
+              PreparedStatement pst1 = connection.prepareStatement(query1);
+              try {    
+                pst1.setString (1,null);
+                pst1.executeUpdate();
+                pst1.close();
+              //  out.println("");
+                System.out.println("Device group set to null" );
+              } 
+              catch (SQLException ex) {
+                  return false;
+             }
+             
+             
+             
+             
+              String query2 ="DELETE from diplomova_prace_db.groups WHERE group_name = " + "\"" + group_name+ "\" AND username = " + "\"" + username+ "\"";
+              PreparedStatement pst = connection.prepareStatement(query2);
               
               try {    
               
                 pst.executeUpdate();
-                System.out.println("Sensor unregistered");
+                System.out.println("Group :" + group_name + " with user " + username + " removed");
               } 
               catch (SQLException ex) {
                 System.out.println(ex);
@@ -751,7 +768,7 @@ public class DatabaseManager implements DataAccess {
     @Override
     public boolean changeGroupName(String username, String oldGroup,String newGroup) throws SQLException {
         
-            String query = " UPDATE groups SET group_name = ? WHERE usernmae = " + "\"" + username + "\" AND group_name = " + "\"" + oldGroup + "\"";
+            String query = " UPDATE diplomova_prace_db.groups SET group_name = ? WHERE username = " + "\"" + username + "\" AND group_name = " + "\"" + oldGroup + "\"";
             PreparedStatement pst = connection.prepareStatement(query);
             try {
                 pst.setString (1, newGroup);
@@ -762,6 +779,28 @@ public class DatabaseManager implements DataAccess {
             }catch (SQLException ex) {
               return false;
             }    
+    }
+
+    @Override
+    public boolean createGroupQuery(String username, String group) throws SQLException {
+          String query1 = "SELECT* FROM diplomova_prace_db.groups WHERE username = " + "\"" + username + "\" AND group_name = " + "\"" + group + "\"";
+          PreparedStatement pst1 = connection.prepareStatement(query1);
+          ResultSet result = pst1.executeQuery();
+          if(result.next()){
+              pst1.close();
+              return false;
+          }
+          pst1.close();
+                  
+          String query2 = " insert into diplomova_prace_db.groups (group_name,username)"
+             + " values (?, ?)";
+           PreparedStatement pst2 = connection.prepareStatement(query2);
+           pst2.setString (1, group);
+           pst2.setString (2, username);
+        
+           pst2.executeUpdate();
+           pst2.close();
+           return true;
     }
     
 }

@@ -242,6 +242,8 @@ public interface DataAccess {
     public boolean changeGroupName(String username, String oldGroup,String newGroup) throws SQLException;
     
     public String getGroupID(String username, String group) throws SQLException;
+    
+    public boolean createGroupQuery(String username, String group) throws SQLException;
                  
 
 

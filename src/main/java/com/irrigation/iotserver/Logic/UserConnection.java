@@ -161,10 +161,13 @@ public class UserConnection extends Thread{
                 sendCodeAnswerToDatabaseRequest(true, message.getType());
             break;
             case CHANGE_GROUP_NAME:
-                databaseManager.changeGroupName((String) message.getContent().get(0),(String) message.getContent().get(1),(String) message.getContent().get(2));
+                sendCodeAnswerToDatabaseRequest(databaseManager.changeGroupName((String) message.getContent().get(0),(String) message.getContent().get(1),(String) message.getContent().get(2)),message.getType());
             break;
             case DELETE_GROUP:
-                 databaseManager.removeGroupQuery((String) message.getContent().get(0),(String) message.getContent().get(1));
+                 sendCodeAnswerToDatabaseRequest(databaseManager.removeGroupQuery((String) message.getContent().get(0),(String) message.getContent().get(1)),message.getType());
+            break;
+            case CREATE_GROUP:
+                sendCodeAnswerToDatabaseRequest(databaseManager.createGroupQuery((String) message.getContent().get(0),(String) message.getContent().get(1)),message.getType());
             break;
             
 
