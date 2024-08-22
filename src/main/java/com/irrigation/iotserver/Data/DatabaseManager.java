@@ -803,4 +803,39 @@ public class DatabaseManager implements DataAccess {
            return true;
     }
     
+       @Override
+       public String getTokenOwnerQuery(String token) throws SQLException{
+            String query = "SELECT* FROM users WHERE token = " + "\"" +  token + "\"";
+          PreparedStatement pst = connection.prepareStatement(query);
+           ResultSet result = pst.executeQuery();
+          
+           String val = "";
+           if(result.next()){
+           val = result.getString("username");
+            pst.close();
+            return val;
+    
+          }
+           else{
+               pst.close();
+               return "";
+           }
+         }
+       
+       @Override
+       public void setTokenQuery(String username,String token) throws SQLException{
+             String query = " UPDATE users SET token = ? WHERE username = " + "\"" + username + "\"";
+             PreparedStatement pst = connection.prepareStatement(query);
+                        try {
+                            pst = connection.prepareStatement(query);
+                         //   pst.setString (1, unit_ID);
+                            pst.setString (1, token);
+                            pst.executeUpdate();
+                            pst.close();
+                        //    out.println("");
+                        } catch (SQLException ex) {
+                            System.out.println(ex);    
+                        } 
+       }
+    
 }

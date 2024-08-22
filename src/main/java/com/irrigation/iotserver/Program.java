@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * @author brune
  */
 public class Program {
-    DataAccess databaseManager;
+    static DataAccess databaseManager;
     OutboundManager dataConnector;
     public Program(){
         prepareConnectionToDatabase();
@@ -30,6 +30,10 @@ public class Program {
         userConnectionManager.start();
         dataConnector.sendMessage("eui-70b3d57ed8003263", "test");
     } 
+    
+    public static DataAccess getDatabaseManager(){
+        return databaseManager;
+    }
     
     private void prepareConnectionToLoRaServer(){
         dataConnector = new OutboundManager(databaseManager);

@@ -244,6 +244,10 @@ public interface DataAccess {
     public String getGroupID(String username, String group) throws SQLException;
     
     public boolean createGroupQuery(String username, String group) throws SQLException;
+    
+    public String getTokenOwnerQuery(String username) throws SQLException;
+    
+    public void setTokenQuery(String username,String token) throws SQLException;
                  
 
 
