@@ -5,11 +5,13 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+import java.io.Serializable;
+
 /**
  *
  * @author brune
  */
-public class DeviceRequest extends UserRequest {
+public class DeviceRequest extends UserRequest implements Serializable{
     
     String device;
     String irrigationTime;
@@ -24,6 +26,8 @@ public class DeviceRequest extends UserRequest {
         this.treshold = treshold;
         this.deviceNickname = deviceNickname;
     }
+      
+    public DeviceRequest() {}
 
     public String getNewGroup() {
         return newGroup;
@@ -42,6 +46,10 @@ public class DeviceRequest extends UserRequest {
     public DeviceRequest(String token, String device) {
         super(token);
         this.device = device;
+    }
+    
+    public DeviceRequest(String token){
+        super(token);
     }
   
     public String getDevice() {
@@ -75,7 +83,4 @@ public class DeviceRequest extends UserRequest {
     public void setDeviceNickname(String deviceNickname) {
         this.deviceNickname = deviceNickname;
     }
-    
-    
-    
 }

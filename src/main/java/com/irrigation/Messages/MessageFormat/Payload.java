@@ -5,20 +5,30 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.irrigation.Messages.MessageData.Device;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author brune
  */
-public class Payload<T> implements Serializable {
+@JsonDeserialize(builder = Payload.PayloadBuilder.class)
+public class Payload implements Serializable {
+    @JsonProperty("content")
     List<String> content;
+    @JsonProperty("type")
     MessageType type;
+    @JsonProperty("code")
     Code code;
+    @JsonProperty("token")
     String token;
-    T data;
+    @JsonProperty("data")
+    ArrayList<Device> data;
 
     public String getToken() {
         return token;
@@ -34,8 +44,8 @@ public class Payload<T> implements Serializable {
         this.content = builder.content;
         this.type = builder.type;
         this.code = builder.code;
-        this.token = builder.token;
-        this.data = (T) builder.data;
+        this.token =builder.token;
+        this.data = builder.data;
     }
     
     public List<String> getContent() {
@@ -50,32 +60,30 @@ public class Payload<T> implements Serializable {
         return type;
     }
 
-    public void setType(MessageType type) {
-        this.type = type;
-    }
-
     public Code getCode() {
         return code;
     }
 
-    public void setCode(Code code) {
-        this.code = code;
-    }
     
-    public T getCarriedObject(){
+    public ArrayList<Device> getObject(){
         return data;
     }
     
-    
-    public static class PayloadBuilder<E>{
+    @JsonPOJOBuilder(withPrefix = "set")
+    public static class PayloadBuilder{
         private List<String> content;
         private MessageType type;
         private Code code;
         private String token;
-        private E data;
+        @JsonProperty("data")
+        private ArrayList<Device> data;
    
     
         public PayloadBuilder() {
+        }
+        
+         public PayloadBuilder(Code code) {
+             this.code = code;
         }
         
         public PayloadBuilder setToken(String token){
@@ -97,7 +105,7 @@ public class Payload<T> implements Serializable {
             return this;
         }
         
-        public PayloadBuilder setObject(E data){
+        public PayloadBuilder setObject(ArrayList<Device> data){
             this.data = data;
             return this;
         }

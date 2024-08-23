@@ -5,11 +5,13 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+import java.io.Serializable;
+
 /**
  *
  * @author brune
  */
-public class CredentialsRequest {
+public class CredentialsRequest implements Serializable {
     
     String username;
     String password;
@@ -18,6 +20,8 @@ public class CredentialsRequest {
         this.username = username;
         this.password = password;
     }
+    
+      public CredentialsRequest() {}
 
     public String getUsername() {
         return username;

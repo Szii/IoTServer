@@ -5,11 +5,13 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+import java.io.Serializable;
+
 /**
  *
  * @author brune
  */
-public class MeasurementRequest extends UserRequest {
+public class MeasurementRequest extends UserRequest implements Serializable{
     
     String device;
     String from;
@@ -19,6 +21,8 @@ public class MeasurementRequest extends UserRequest {
         super(token);
         this.device = device;
     }
+    
+     public MeasurementRequest() {}
 
     public MeasurementRequest(String token, String device, String from, String to) {
         super(token);

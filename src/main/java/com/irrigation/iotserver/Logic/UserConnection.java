@@ -70,8 +70,8 @@ public class UserConnection extends Thread{
         switch(message.getType()){
             case PING:
                 System.out.println("Ping arrived");
-                sendMessage(new Payload.PayloadBuilder<Code>()
-                        .setObject(Code.SUCCESS)
+                sendMessage(new Payload.PayloadBuilder()
+                        .setCode(Code.SUCCESS)
                         .build());
             break;  
             case CONFIRM_LOGIN:
@@ -79,6 +79,7 @@ public class UserConnection extends Thread{
                 if(PasswordHasher.compareIfPassowrdMatchesWithStoredHash((String) message.getContent().get(1), 
                         databaseManager.getPasswordQuery((String) message.getContent().get(0)))){
                     userToken = TokenGenerator.generateToken();
+                    databaseManager.setTokenQuery((String) message.getContent().get(0), userToken);
                     sendLoginConfirmationSuccess();
                     System.out.println(userToken);
 
@@ -97,21 +98,21 @@ public class UserConnection extends Thread{
                         PasswordHasher.getHash((String) message.getContent().get(1))), message.getType()); 
             break;
             case GET_AVAILABLE_REGISTERED_DEVICES:
-                sendMessage(new Payload.PayloadBuilder<Payload>()
+                sendMessage(new Payload.PayloadBuilder()
                         .setCode(Code.SUCCESS)
                         .setObject(getAvailableDevicesBasedOnUsername((String) message.getContent().get(0)))
                         .setType(MessageType.GET_AVAILABLE_REGISTERED_DEVICES)
                         .build());
             break;
             case GET_MEASUREMENT_DATA:
-                sendMessage(new Payload.PayloadBuilder<Payload>()
+                sendMessage(new Payload.PayloadBuilder()
                         .setCode(Code.SUCCESS)
                         .setContent(databaseManager.getMeasurementDataQuery((String)message.getContent().get(0)))
                         .setType(MessageType.GET_MEASUREMENT_DATA)
                         .build());
             break;
             case GET_MEASUREMENT_DATA_IN_RANGE:
-                sendMessage(new Payload.PayloadBuilder<Payload>()
+                sendMessage(new Payload.PayloadBuilder()
                         .setCode(Code.SUCCESS)
                         .setContent(databaseManager.getMeasurementDataInRange
                                             ((String)message.getContent().get(0),
@@ -137,7 +138,7 @@ public class UserConnection extends Thread{
                 databaseManager.unregisterDeviceQuery((String)message.getContent().get(0), (String)message.getContent().get(1));
             break;
             case GET_GROUPS:
-                 sendMessage(new Payload.PayloadBuilder<Payload>()
+                 sendMessage(new Payload.PayloadBuilder()
                         .setCode(Code.SUCCESS)
                         .setContent(databaseManager.getGroupsQuery((String) message.getContent().get(0)))
                         .setType(MessageType.GET_GROUPS)
@@ -145,7 +146,7 @@ public class UserConnection extends Thread{
             break;
             case GET_DEVICES_IN_GROUP:
                 String group_ID = databaseManager.getGroupID((String) message.getContent().get(0),(String) message.getContent().get(1));
-                sendMessage(new Payload.PayloadBuilder<Payload>()
+                sendMessage(new Payload.PayloadBuilder()
                         .setCode(Code.SUCCESS)
                         .setObject(getAvailableDevicesBasedOnUsernameAndGroup(group_ID))
                         .setType(MessageType.GET_DEVICES_IN_GROUP)

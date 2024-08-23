@@ -5,14 +5,18 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+import java.io.Serializable;
+
 /**
  *
  * @author brune
  */
-public class GroupRequest extends UserRequest {
+public class GroupRequest extends UserRequest implements Serializable {
     
     String group;
     String  groupNewName;
+    
+    public GroupRequest() {}
 
     public GroupRequest(String token, String group) {
         super(token);

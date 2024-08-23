@@ -50,13 +50,14 @@ public class Controller {
             }
     }
     
-    @PostMapping("/getAllDevices")
+    @PostMapping("/devices/getAll")
     public Payload getDevices(@RequestBody DeviceRequest deviceRequest) {
         try {
             String username = databaseManager.getTokenOwnerQuery(deviceRequest.getToken());
+            System.out.println("User with token is:" + username + "and token is: " + deviceRequest.getToken());
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
-                    .setContent(this.getAvailableDevicesBasedOnUsername(username))
+                    .setObject(this.getAvailableDevicesBasedOnUsername(username))
                     .build();
         } catch (SQLException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,7 +65,7 @@ public class Controller {
         }
     }
     
-        @PostMapping("/getGroupDevices")
+        @PostMapping("/devices/getAllInGroup")
     public Payload getGroupDevices(@RequestBody DeviceRequest deviceRequest) {
         try {
             String username = databaseManager.getTokenOwnerQuery(deviceRequest.getToken());
@@ -80,7 +81,7 @@ public class Controller {
         }
     }
     
-    @PostMapping("/getGroups")
+    @PostMapping("/groups/get")
     public Payload getGroups(@RequestBody GroupRequest groupRequest){
           try {
             String username = databaseManager.getTokenOwnerQuery(groupRequest.getToken());
@@ -94,8 +95,9 @@ public class Controller {
         }
     }
     
-    @PostMapping("/renameGroup")
+    @PostMapping("/groups/rename")
     public Payload renameGroup(@RequestBody GroupRequest groupRequest){
+        System.out.println("RENAME GROUP ENDPOINT CALLED");
           try {
              String username = databaseManager.getTokenOwnerQuery(groupRequest.getToken());
              if(databaseManager.changeGroupName(username, groupRequest.getGroup(), groupRequest.getGroupNewName())){
@@ -110,19 +112,11 @@ public class Controller {
         }
     }
     
-    @PostMapping("/updateDevice")
-    public Payload updateDevice(@RequestBody DeviceRequest deviceRequest){
+     @PostMapping("/groups/remove")
+    public Payload removeGroup(@RequestBody GroupRequest groupRequest){
         try {
-            String username = checkAuthorisation(deviceRequest.getToken());
-            if(deviceRequest.getTreshold() != null)
-                databaseManager.setThresoldQuery(deviceRequest.getDevice(),deviceRequest.getTreshold());
-            if(deviceRequest.getIrrigationTime()!= null)
-                databaseManager.setIrrigationTime(deviceRequest.getDevice(), deviceRequest.getIrrigationTime());
-            if(deviceRequest.getDeviceNickname()!= null)
-                databaseManager.setSensorNickname(deviceRequest.getDevice(), deviceRequest.getDeviceNickname());
-            if(deviceRequest.getNewGroup()!= null)
-                databaseManager.addDeviceToGroup(deviceRequest.getDevice(), databaseManager.getGroupID(username, deviceRequest.getNewGroup()));
-            
+            String username = checkAuthorisation(groupRequest.getToken());
+            databaseManager.removeGroupQuery(username, groupRequest.getGroup());     
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
@@ -130,16 +124,94 @@ public class Controller {
 
     }
     
-    @PostMapping("/measurement")
+     @PostMapping("/groups/add")
+    public Payload addGroup(@RequestBody GroupRequest groupRequest){
+        System.out.println("ADD GROUP ENDPOINT CALLED " + groupRequest.getGroup());
+        try {
+            String username = checkAuthorisation(groupRequest.getToken());
+            databaseManager.createGroupQuery(username,groupRequest.getGroup());     
+            return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
+        } catch (SQLException ex) {
+            return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
+        }
+
+    }
+    
+    @PostMapping("/devices/register")
+    public Payload registerDevice(@RequestBody DeviceRequest deviceRequest){
+                try {
+                    String username = checkAuthorisation(deviceRequest.getToken());
+
+                     return new Payload.PayloadBuilder()
+                        .setCode(returnCodeSuccessOnTrue(databaseManager.registerDeviceQuery(deviceRequest.getDevice(), username)))
+                        .build();
+                  
+        } catch (SQLException ex) {
+            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
+        }
+    }
+    
+     @PostMapping("/devices/unregister")
+     public Payload unregistrerDevice(@RequestBody DeviceRequest deviceRequest){
+                try {
+                    String username = checkAuthorisation(deviceRequest.getToken());
+                    databaseManager.unregisterDeviceQuery(deviceRequest.getDevice(), username);
+                     return new Payload.PayloadBuilder()
+                        .setCode(Code.SUCCESS)
+                        .build();
+                  
+        } catch (SQLException ex) {
+            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
+        }
+    }
+    
+        
+     @PostMapping("/devices/removeFromGroup")
+    public Payload removeDeviceFromGroup(@RequestBody DeviceRequest deviceRequest){
+        try {
+            String username = checkAuthorisation(deviceRequest.getToken());
+            databaseManager.removeDeviceFromGroupQuery(deviceRequest.getDevice());     
+            return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
+        } catch (SQLException ex) {
+            return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
+        }
+
+    }
+    
+    @PostMapping("/devices/update")
+    public Payload updateDevice(@RequestBody DeviceRequest deviceRequest){
+        System.out.println("UPDATE DEVICE ENDPOINT CALLED");
+        try {
+            System.out.println("Updating device: " + deviceRequest.getToken() + deviceRequest.getDevice() + deviceRequest.getDeviceNickname()+ deviceRequest.getIrrigationTime()+ deviceRequest.getNewGroup());
+            String username = checkAuthorisation(deviceRequest.getToken());
+            if(deviceRequest.getTreshold() != null)
+                databaseManager.setThresoldQuery(deviceRequest.getDevice(),deviceRequest.getTreshold());
+            if(deviceRequest.getIrrigationTime()!= null)
+                databaseManager.setIrrigationTime(deviceRequest.getDevice(), deviceRequest.getIrrigationTime());
+            if(deviceRequest.getDeviceNickname()!= null)
+                databaseManager.setSensorNickname(deviceRequest.getDevice(), deviceRequest.getDeviceNickname());   
+            if(deviceRequest.getNewGroup() != null){
+                databaseManager.addDeviceToGroup(deviceRequest.getDevice(), databaseManager.getGroupID(username, deviceRequest.getNewGroup()));  
+            }
+            return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
+        } catch (SQLException ex) {
+            return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
+        }
+
+    }
+    
+    @PostMapping("/measurement/get")
     public Payload getMeasurement(@RequestBody MeasurementRequest measurementRequest){
         try {
             String username = checkAuthorisation(measurementRequest.getToken());
-            if(measurementRequest.getFrom() != null && measurementRequest.getTo() != null)
+            if(measurementRequest.getFrom() != null && measurementRequest.getTo() != null){
                     return new Payload.PayloadBuilder()
                     .setContent(databaseManager.getMeasurementDataInRange(measurementRequest.getDevice(),measurementRequest.getFrom(),measurementRequest.getTo()))
                     .setCode(Code.SUCCESS)
                     .build();
-            
+            }
             return new Payload.PayloadBuilder()
                     .setContent(databaseManager.getMeasurementDataQuery(measurementRequest.getDevice()))
                     .setCode(Code.SUCCESS)
@@ -164,7 +236,6 @@ public class Controller {
                 databaseManager.setTokenQuery(loginRequest.getUsername(), token);
                 return new Payload.PayloadBuilder()
                         .setCode(Code.SUCCESS)
-                        .setContent(databaseManager.getAvailableSensors((loginRequest.getUsername())))
                         .setToken(token)
                         .build();
             }
@@ -214,6 +285,7 @@ public class Controller {
                 devices.add(device);
 
             }
+            System.out.println("returning devices: " + devices.size());
             return devices;
                     
                     } catch (SQLException ex) {
@@ -239,6 +311,7 @@ public class Controller {
                 devices.add(device);
 
             }
+            System.out.println("returning devices: " + devices.size());
             return devices;
                     
                     } catch (SQLException ex) {
@@ -246,5 +319,8 @@ public class Controller {
             return devices;
         }
         }
+    private Code returnCodeSuccessOnTrue(boolean statement){
+        return statement ? Code.SUCCESS : Code.FAILURE;
+    } 
     
 }
