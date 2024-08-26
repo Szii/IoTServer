@@ -72,7 +72,7 @@ public class Controller {
         }
     }
     
-        @PostMapping("/devices/getAllInGroup")
+    @PostMapping("/devices/getAllInGroup")
     public Payload getGroupDevices(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest) {
         try {
             String username = databaseManager.getTokenOwnerQuery(getToken(token));
@@ -238,7 +238,7 @@ public class Controller {
         try {
             System.out.println("Login attempt");
             if(PasswordHasher.compareIfPassowrdMatchesWithStoredHash(loginRequest.getPassword(),
-                    databaseManager.getPasswordQuery(loginRequest.getUsername()))){
+                databaseManager.getPasswordQuery(loginRequest.getUsername()))){
                 String token = TokenGenerator.generateToken();
                 databaseManager.setTokenQuery(loginRequest.getUsername(), token);
                 return new Payload.PayloadBuilder()

@@ -6,6 +6,8 @@
 package com.irrigation.iotserver.Security;
 
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 /**
@@ -15,9 +17,11 @@ import java.util.Random;
 public class TokenGenerator {
     
     public static String generateToken(){
-        byte[] array = new byte[30]; 
-        new Random().nextBytes(array);
-        return  new String(array, Charset.forName("UTF-8"));
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] randomBytes = new byte[30];
+        secureRandom.nextBytes(randomBytes);
+        String base64Token = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+        return base64Token;
     }
     
 }
