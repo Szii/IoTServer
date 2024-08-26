@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author brune
  */
-public class DeviceRequest extends UserRequest implements Serializable{
+public class DeviceRequest implements Serializable{
     
     String device;
     String irrigationTime;
@@ -19,8 +19,7 @@ public class DeviceRequest extends UserRequest implements Serializable{
     String deviceNickname;
     String newGroup;
 
-    public DeviceRequest(String token, String device, String irrigationTime, String treshold, String deviceNickname) {
-        super(token);
+    public DeviceRequest(String device, String irrigationTime, String treshold, String deviceNickname) {
         this.device = device;
         this.irrigationTime = irrigationTime;
         this.treshold = treshold;
@@ -37,20 +36,15 @@ public class DeviceRequest extends UserRequest implements Serializable{
         this.newGroup = newGroup;
     }
 
-    public DeviceRequest(String token, String device, String deviceNickname) {
-        super(token);
+    public DeviceRequest(String device, String deviceNickname) {
         this.device = device;
         this.deviceNickname = deviceNickname;
     }
 
-    public DeviceRequest(String token, String device) {
-        super(token);
+    public DeviceRequest(String device) {
         this.device = device;
     }
-    
-    public DeviceRequest(String token){
-        super(token);
-    }
+
   
     public String getDevice() {
         return device;

@@ -11,20 +11,18 @@ import java.io.Serializable;
  *
  * @author brune
  */
-public class GroupRequest extends UserRequest implements Serializable {
+public class GroupRequest implements Serializable {
     
     String group;
     String  groupNewName;
     
     public GroupRequest() {}
 
-    public GroupRequest(String token, String group) {
-        super(token);
+    public GroupRequest(String group) {
         this.group = group;
     }
     
-    public GroupRequest(String token, String group, String groupNewName) {
-        super(token);
+    public GroupRequest(String group, String groupNewName) {
         this.group = group;
         this.groupNewName = groupNewName;
     }

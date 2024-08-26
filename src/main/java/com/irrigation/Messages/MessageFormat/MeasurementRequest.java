@@ -11,21 +11,19 @@ import java.io.Serializable;
  *
  * @author brune
  */
-public class MeasurementRequest extends UserRequest implements Serializable{
+public class MeasurementRequest implements Serializable{
     
     String device;
     String from;
     String to;
 
-    public MeasurementRequest(String token, String device) {
-        super(token);
+    public MeasurementRequest(String device) {
         this.device = device;
     }
     
      public MeasurementRequest() {}
 
-    public MeasurementRequest(String token, String device, String from, String to) {
-        super(token);
+    public MeasurementRequest(String device, String from, String to) {
         this.device = device;
         this.from = from;
         this.to = to;

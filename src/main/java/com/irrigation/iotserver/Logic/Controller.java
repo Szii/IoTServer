@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +40,13 @@ public class Controller {
        this.databaseManager =  Program.getDatabaseManager();
     }
     
+    private String getToken(String token){
+             if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+             return token;
+    }
+    
     
     public String checkAuthorisation(String token) throws SQLException{
             String username =  databaseManager.getTokenOwnerQuery(token);
@@ -51,10 +59,9 @@ public class Controller {
     }
     
     @PostMapping("/devices/getAll")
-    public Payload getDevices(@RequestBody DeviceRequest deviceRequest) {
+    public Payload getDevices(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest) {
         try {
-            String username = databaseManager.getTokenOwnerQuery(deviceRequest.getToken());
-            System.out.println("User with token is:" + username + "and token is: " + deviceRequest.getToken());
+            String username = databaseManager.getTokenOwnerQuery(getToken(token));
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
                     .setObject(this.getAvailableDevicesBasedOnUsername(username))
@@ -66,9 +73,9 @@ public class Controller {
     }
     
         @PostMapping("/devices/getAllInGroup")
-    public Payload getGroupDevices(@RequestBody DeviceRequest deviceRequest) {
+    public Payload getGroupDevices(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest) {
         try {
-            String username = databaseManager.getTokenOwnerQuery(deviceRequest.getToken());
+            String username = databaseManager.getTokenOwnerQuery(getToken(token));
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
                     .setObject(this.getAvailableDevicesBasedOnUsernameAndGroup
@@ -82,9 +89,9 @@ public class Controller {
     }
     
     @PostMapping("/groups/get")
-    public Payload getGroups(@RequestBody GroupRequest groupRequest){
+    public Payload getGroups(@RequestHeader("Authorization") String token, @RequestBody GroupRequest groupRequest){
           try {
-            String username = databaseManager.getTokenOwnerQuery(groupRequest.getToken());
+            String username = databaseManager.getTokenOwnerQuery(getToken(token));
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
                     .setContent(databaseManager.getGroupsQuery(username))
@@ -96,10 +103,10 @@ public class Controller {
     }
     
     @PostMapping("/groups/rename")
-    public Payload renameGroup(@RequestBody GroupRequest groupRequest){
+    public Payload renameGroup(@RequestHeader("Authorization") String token, @RequestBody GroupRequest groupRequest){
         System.out.println("RENAME GROUP ENDPOINT CALLED");
           try {
-             String username = databaseManager.getTokenOwnerQuery(groupRequest.getToken());
+             String username = databaseManager.getTokenOwnerQuery(getToken(token));
              if(databaseManager.changeGroupName(username, groupRequest.getGroup(), groupRequest.getGroupNewName())){
                  return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
              }
@@ -113,9 +120,9 @@ public class Controller {
     }
     
      @PostMapping("/groups/remove")
-    public Payload removeGroup(@RequestBody GroupRequest groupRequest){
+    public Payload removeGroup(@RequestHeader("Authorization") String token, @RequestBody GroupRequest groupRequest){
         try {
-            String username = checkAuthorisation(groupRequest.getToken());
+            String username = checkAuthorisation(getToken(token));
             databaseManager.removeGroupQuery(username, groupRequest.getGroup());     
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
@@ -125,10 +132,10 @@ public class Controller {
     }
     
      @PostMapping("/groups/add")
-    public Payload addGroup(@RequestBody GroupRequest groupRequest){
+    public Payload addGroup(@RequestHeader("Authorization") String token, @RequestBody GroupRequest groupRequest){
         System.out.println("ADD GROUP ENDPOINT CALLED " + groupRequest.getGroup());
         try {
-            String username = checkAuthorisation(groupRequest.getToken());
+            String username = checkAuthorisation(getToken(token));
             databaseManager.createGroupQuery(username,groupRequest.getGroup());     
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
@@ -138,9 +145,9 @@ public class Controller {
     }
     
     @PostMapping("/devices/register")
-    public Payload registerDevice(@RequestBody DeviceRequest deviceRequest){
+    public Payload registerDevice(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest){
                 try {
-                    String username = checkAuthorisation(deviceRequest.getToken());
+                    String username = checkAuthorisation(getToken(token));
 
                      return new Payload.PayloadBuilder()
                         .setCode(returnCodeSuccessOnTrue(databaseManager.registerDeviceQuery(deviceRequest.getDevice(), username)))
@@ -153,9 +160,9 @@ public class Controller {
     }
     
      @PostMapping("/devices/unregister")
-     public Payload unregistrerDevice(@RequestBody DeviceRequest deviceRequest){
+     public Payload unregistrerDevice(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest){
                 try {
-                    String username = checkAuthorisation(deviceRequest.getToken());
+                    String username = checkAuthorisation(getToken(token));
                     databaseManager.unregisterDeviceQuery(deviceRequest.getDevice(), username);
                      return new Payload.PayloadBuilder()
                         .setCode(Code.SUCCESS)
@@ -169,9 +176,9 @@ public class Controller {
     
         
      @PostMapping("/devices/removeFromGroup")
-    public Payload removeDeviceFromGroup(@RequestBody DeviceRequest deviceRequest){
+    public Payload removeDeviceFromGroup(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest){
         try {
-            String username = checkAuthorisation(deviceRequest.getToken());
+            String username = checkAuthorisation(getToken(token));
             databaseManager.removeDeviceFromGroupQuery(deviceRequest.getDevice());     
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
@@ -181,11 +188,11 @@ public class Controller {
     }
     
     @PostMapping("/devices/update")
-    public Payload updateDevice(@RequestBody DeviceRequest deviceRequest){
+    public Payload updateDevice(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest){
         System.out.println("UPDATE DEVICE ENDPOINT CALLED");
         try {
-            System.out.println("Updating device: " + deviceRequest.getToken() + deviceRequest.getDevice() + deviceRequest.getDeviceNickname()+ deviceRequest.getIrrigationTime()+ deviceRequest.getNewGroup());
-            String username = checkAuthorisation(deviceRequest.getToken());
+            System.out.println("Updating device: " + getToken(token) + deviceRequest.getDevice() + deviceRequest.getDeviceNickname()+ deviceRequest.getIrrigationTime()+ deviceRequest.getNewGroup());
+            String username = checkAuthorisation(getToken(token));
             if(deviceRequest.getTreshold() != null)
                 databaseManager.setThresoldQuery(deviceRequest.getDevice(),deviceRequest.getTreshold());
             if(deviceRequest.getIrrigationTime()!= null)
@@ -203,9 +210,9 @@ public class Controller {
     }
     
     @PostMapping("/measurement/get")
-    public Payload getMeasurement(@RequestBody MeasurementRequest measurementRequest){
+    public Payload getMeasurement(@RequestHeader("Authorization") String token, @RequestBody MeasurementRequest measurementRequest){
         try {
-            String username = checkAuthorisation(measurementRequest.getToken());
+            String username = checkAuthorisation(getToken(token));
             if(measurementRequest.getFrom() != null && measurementRequest.getTo() != null){
                     return new Payload.PayloadBuilder()
                     .setContent(databaseManager.getMeasurementDataInRange(measurementRequest.getDevice(),measurementRequest.getFrom(),measurementRequest.getTo()))
