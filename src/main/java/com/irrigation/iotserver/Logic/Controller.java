@@ -122,7 +122,7 @@ public class Controller {
     }
     
     @DeleteMapping("/groups/remove")
-    public Payload removeGroup(@RequestHeader("Authorization") String token,  @RequestParam("deviceId") String group){
+    public Payload removeGroup(@RequestHeader("Authorization") String token,  @RequestParam("group") String group){
         try {
             String username = checkAuthorisation(getToken(token));
             databaseManager.removeGroupQuery(username, group);     
@@ -177,11 +177,11 @@ public class Controller {
     }
     
         
-    @DeleteMapping("/devices/removeFromGroup")
-    public Payload removeDeviceFromGroup(@RequestHeader("Authorization") String token, @RequestParam("deviceId") String deviceId){
+    @PostMapping("/devices/removeFromGroup")
+    public Payload removeDeviceFromGroup(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest){
         try {
             String username = checkAuthorisation(getToken(token));
-            databaseManager.removeDeviceFromGroupQuery(deviceId);     
+            databaseManager.removeDeviceFromGroupQuery(deviceRequest.getDevice());     
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
