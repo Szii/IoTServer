@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -120,11 +121,11 @@ public class Controller {
         }
     }
     
-     @PostMapping("/groups/remove")
-    public Payload removeGroup(@RequestHeader("Authorization") String token, @RequestBody GroupRequest groupRequest){
+    @DeleteMapping("/groups/remove")
+    public Payload removeGroup(@RequestHeader("Authorization") String token,  @RequestParam("deviceId") String group){
         try {
             String username = checkAuthorisation(getToken(token));
-            databaseManager.removeGroupQuery(username, groupRequest.getGroup());     
+            databaseManager.removeGroupQuery(username, group);     
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
@@ -132,7 +133,7 @@ public class Controller {
 
     }
     
-     @PostMapping("/groups/add")
+    @PostMapping("/groups/add")
     public Payload addGroup(@RequestHeader("Authorization") String token, @RequestBody GroupRequest groupRequest){
         System.out.println("ADD GROUP ENDPOINT CALLED " + groupRequest.getGroup());
         try {
@@ -176,11 +177,11 @@ public class Controller {
     }
     
         
-     @PostMapping("/devices/removeFromGroup")
-    public Payload removeDeviceFromGroup(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest){
+    @DeleteMapping("/devices/removeFromGroup")
+    public Payload removeDeviceFromGroup(@RequestHeader("Authorization") String token, @RequestParam("deviceId") String deviceId){
         try {
             String username = checkAuthorisation(getToken(token));
-            databaseManager.removeDeviceFromGroupQuery(deviceRequest.getDevice());     
+            databaseManager.removeDeviceFromGroupQuery(deviceId);     
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
@@ -210,7 +211,7 @@ public class Controller {
 
     }
     
-    @PostMapping("/measurement/get")
+    @GetMapping("/measurement/get")
     public Payload getMeasurement(@RequestHeader("Authorization") String token, @RequestParam (required = false)  String device, @RequestParam String from,@RequestParam (required = false)  String to){
         try {
             String username = checkAuthorisation(getToken(token));
