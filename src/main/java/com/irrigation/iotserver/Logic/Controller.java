@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -58,8 +59,8 @@ public class Controller {
             }
     }
     
-    @PostMapping("/devices/getAll")
-    public Payload getDevices(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest) {
+    @GetMapping("/devices/getAll")
+    public Payload getDevices(@RequestHeader("Authorization") String token) {
         try {
             String username = databaseManager.getTokenOwnerQuery(getToken(token));
             return new Payload.PayloadBuilder()
@@ -72,14 +73,14 @@ public class Controller {
         }
     }
     
-    @PostMapping("/devices/getAllInGroup")
-    public Payload getGroupDevices(@RequestHeader("Authorization") String token, @RequestBody DeviceRequest deviceRequest) {
+    @GetMapping("/devices/getAllInGroup")
+    public Payload getGroupDevices(@RequestHeader("Authorization") String token, @RequestParam(required = true) String groupName) {
         try {
             String username = databaseManager.getTokenOwnerQuery(getToken(token));
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
                     .setObject(this.getAvailableDevicesBasedOnUsernameAndGroup
-                        (databaseManager.getGroupID(username,deviceRequest.getNewGroup())))
+                        (databaseManager.getGroupID(username,groupName)))
                     .build();
                             
         } catch (SQLException ex) {
@@ -88,8 +89,8 @@ public class Controller {
         }
     }
     
-    @PostMapping("/groups/get")
-    public Payload getGroups(@RequestHeader("Authorization") String token, @RequestBody GroupRequest groupRequest){
+    @GetMapping("/groups/get")
+    public Payload getGroups(@RequestHeader("Authorization") String token){
           try {
             String username = databaseManager.getTokenOwnerQuery(getToken(token));
             return new Payload.PayloadBuilder()
@@ -210,17 +211,17 @@ public class Controller {
     }
     
     @PostMapping("/measurement/get")
-    public Payload getMeasurement(@RequestHeader("Authorization") String token, @RequestBody MeasurementRequest measurementRequest){
+    public Payload getMeasurement(@RequestHeader("Authorization") String token, @RequestParam (required = false)  String device, @RequestParam String from,@RequestParam (required = false)  String to){
         try {
             String username = checkAuthorisation(getToken(token));
-            if(measurementRequest.getFrom() != null && measurementRequest.getTo() != null){
+            if(from!= null && to != null){
                     return new Payload.PayloadBuilder()
-                    .setContent(databaseManager.getMeasurementDataInRange(measurementRequest.getDevice(),measurementRequest.getFrom(),measurementRequest.getTo()))
+                    .setContent(databaseManager.getMeasurementDataInRange(device,from,to))
                     .setCode(Code.SUCCESS)
                     .build();
             }
             return new Payload.PayloadBuilder()
-                    .setContent(databaseManager.getMeasurementDataQuery(measurementRequest.getDevice()))
+                    .setContent(databaseManager.getMeasurementDataQuery(device))
                     .setCode(Code.SUCCESS)
                     .build();
             
