@@ -6,8 +6,11 @@
 package com.irrigation.iotserver.Logic;
 
 import com.irrigation.iotserver.Data.DataAccess;
+import com.irrigation.iotserver.Data.ParsedMessage;
 import com.irrigation.iotserver.Data.Publisher;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -115,17 +118,17 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     }
     
     private void evaluateMessageBasedOnType(String wholeMessageAsJSON) throws SQLException{
-        //to do: make parsing one time only
-        switch (EndDeviceMessageParser.getInstance().getTypeOfData(wholeMessageAsJSON)){
-            case "humidity":
-                String humidity = EndDeviceMessageParser.getInstance().getDataValue(wholeMessageAsJSON);
-                String device = EndDeviceMessageParser.getInstance().getEndDeviceID(wholeMessageAsJSON);
-                String date = "";
-                databaseManager.addMeasurmentQuery(device, humidity, date);
-                break;
-            default:
-                break;
-        }
+       String date = getCurrentDateTime();
+       ParsedMessage parsedMessgae = EndDeviceMessageParser.getInstance().parseJSON(wholeMessageAsJSON);
+       databaseManager.addMeasurmentQuery(parsedMessgae.getDeviceID(), String.valueOf(parsedMessgae.getHumidity()), date);
         
+    }
+    
+    private String getCurrentDateTime(){
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = currentDateTime.format(formatter);
+        System.out.println("Formatted Date and Time: " + formattedDateTime);
+        return formattedDateTime;
     }
 }

@@ -28,7 +28,7 @@ public class Program {
         prepareConnectionToLoRaServer();
         UserConnectionManager userConnectionManager = new UserConnectionManager(databaseManager);
         userConnectionManager.start();
-        dataConnector.sendMessage("eui-70b3d57ed8003263", "test");
+        dataConnector.sendMessage("11111111", "test");
     } 
     
     public static DataAccess getDatabaseManager(){
