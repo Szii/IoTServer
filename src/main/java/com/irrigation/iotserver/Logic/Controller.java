@@ -287,7 +287,7 @@ public class Controller {
                         .setNickname(databaseManager.getSensorNickname(sensorID))
                         .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
                         .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(1))
-                        .setLastMeasuredValue(databaseManager.getMeasurementDataQuery(sensorID).get(0))
+                        .setLastMeasuredValue(databaseManager.getLastMeasurementQuery(sensorID))
                         .setThreshold(databaseManager.getThresoldQuery(sensorID))
                         .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
                         .build();
@@ -313,7 +313,7 @@ public class Controller {
                         .setNickname(databaseManager.getSensorNickname(sensorID))
                         .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
                         .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(1))
-                        .setLastMeasuredValue(databaseManager.getMeasurementDataQuery(sensorID).get(0))
+                        .setLastMeasuredValue(databaseManager.getLastMeasurementQuery(sensorID))
                         .setThreshold(databaseManager.getThresoldQuery(sensorID))
                         .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
                         .build();

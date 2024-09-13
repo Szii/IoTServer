@@ -99,7 +99,7 @@ public interface DataAccess {
      * @param date date of measurement
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public void addMeasurmentQuery(String sensor_ID,String measure,String date)throws SQLException;
+    public void addMeasurementQuery(String sensor_ID,String measure,String date)throws SQLException;
     /**
      * Method unregister unit by modifing data source
      * @param unit_ID ID of unit
@@ -112,7 +112,7 @@ public interface DataAccess {
      * @return last measured value
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public String lastQuery(String sensor_ID) throws SQLException;
+    public String getLastMeasurementQuery(String sensor_ID) throws SQLException;
     /**
      * Method checks the data source if sensor belongs to unit
      * @param sensor_ID ID of sensor

@@ -264,7 +264,7 @@ public class DatabaseManager implements DataAccess {
           }
           
           @Override
-          public void addMeasurmentQuery(String sensor_ID,String measure,String date)throws SQLException{
+          public void addMeasurementQuery(String sensor_ID,String measure,String date)throws SQLException{
             int maxCount = 10000;  
               
            String countQuery = "SELECT COUNT(*) AS rowcount FROM measurment";   
@@ -275,16 +275,16 @@ public class DatabaseManager implements DataAccess {
            result.close();
            if(count > maxCount){
            
-            ps = connection.prepareStatement("TRUNCATE measurment");
+            ps = connection.prepareStatement("TRUNCATE measurements");
             ps.executeUpdate();
             
-            ps = connection.prepareStatement("ALTER TABLE measurment AUTO_INCREMENT = 1");
+            ps = connection.prepareStatement("ALTER TABLE measurements AUTO_INCREMENT = 1");
             ps.execute();  
             
             ps.close();
            }
               
-          String query = " insert into measurments (device_ID,date,value)"
+          String query = " insert into measurements (device_ID,date,value)"
              + " values (?, ?,?)";
            PreparedStatement pst = connection.prepareStatement(query);
            pst.setString (1, sensor_ID);
@@ -315,8 +315,8 @@ public class DatabaseManager implements DataAccess {
         }
            
          @Override
-         public String lastQuery(String sensor_ID) throws SQLException{
-            String query = "SELECT* FROM measurments WHERE device_ID = " + "\"" +  sensor_ID + "\"";
+         public String getLastMeasurementQuery(String sensor_ID) throws SQLException{
+            String query = "SELECT* FROM measurements WHERE device_ID = " + "\"" +  sensor_ID + "\"";
           PreparedStatement pst = connection.prepareStatement(query);
            ResultSet result = pst.executeQuery();
         
@@ -715,6 +715,8 @@ public class DatabaseManager implements DataAccess {
                    pst.close();
                    return measuredData;    
     }
+    
+
 
     @Override
     public String getIrrigationTime(String sensorID) throws SQLException {
