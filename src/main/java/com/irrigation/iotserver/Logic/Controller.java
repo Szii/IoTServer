@@ -212,7 +212,8 @@ public class Controller {
     }
     
     @GetMapping("/measurement/get")
-    public Payload getMeasurement(@RequestHeader("Authorization") String token, @RequestParam (required = false)  String device, @RequestParam String from,@RequestParam (required = false)  String to){
+    public Payload getMeasurement(@RequestHeader("Authorization") String token,  @RequestParam (required = true)  String device, @RequestParam (required = false)  String from,@RequestParam (required = false)  String to){
+        System.out.println("from is: " + from + " to is: " + to);
         try {
             String username = checkAuthorisation(getToken(token));
             if(from!= null && to != null){

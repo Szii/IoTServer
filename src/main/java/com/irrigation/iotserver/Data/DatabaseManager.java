@@ -673,6 +673,7 @@ public class DatabaseManager implements DataAccess {
 
     @Override
     public ArrayList<String> getMeasurementDataQuery(String sensorID) throws SQLException {
+        System.out.println("getting measurement for sensor" + sensorID);
         ArrayList<String> measuredData = new ArrayList<>();
         //String query = "SELECT* FROM measurment WHERE sensor_ID = ?";
           String query = "SELECT measurements.value,measurements.date FROM measurements LEFT JOIN devices ON devices.device_ID = measurements.device_ID WHERE devices.device_ID = ?";

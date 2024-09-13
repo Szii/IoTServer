@@ -11,6 +11,7 @@ import com.irrigation.iotserver.Data.Publisher;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -118,10 +119,13 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     }
     
     private void evaluateMessageBasedOnType(String wholeMessageAsJSON) throws SQLException{
+        /*
        String date = getCurrentDateTime();
        ParsedMessage parsedMessgae = EndDeviceMessageParser.getInstance().parseJSON(wholeMessageAsJSON);
+       ArrayList<String> data = databaseManager.getMeasurementDataQuery(parsedMessgae.getDeviceID());
+     //  if()
        databaseManager.addMeasurmentQuery(parsedMessgae.getDeviceID(), String.valueOf(parsedMessgae.getHumidity()), date);
-        
+        */
     }
     
     private String getCurrentDateTime(){
