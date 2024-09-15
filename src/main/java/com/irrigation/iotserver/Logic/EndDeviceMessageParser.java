@@ -39,7 +39,8 @@ public class EndDeviceMessageParser {
 
         try {
             JsonNode rootNode = objectMapper.readTree(dataInJSON);
-            String devEui = rootNode.path("end_device_ids").path("dev_eui").asText();
+            String devEui = rootNode.path("end_device_ids").path("device_id").asText();
+            System.out.println("parsed devui: " + devEui);
             parsedMessage.setDeviceID(devEui);
             JsonNode payload = rootNode.path("uplink_message").path("decoded_payload").path("bytes");
             int payloadValue = -1;
@@ -47,6 +48,7 @@ public class EndDeviceMessageParser {
             for (int i = 0; i < payload.size(); i++) {
                 payloadValue = payload.get(i).asInt(); 
             }
+            System.out.println("parsed humidity: " + payloadValue);
               parsedMessage.setHumidity(payloadValue);
              return parsedMessage;
             

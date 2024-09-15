@@ -267,7 +267,7 @@ public class DatabaseManager implements DataAccess {
           public void addMeasurementQuery(String sensor_ID,String measure,String date)throws SQLException{
             int maxCount = 10000;  
               
-           String countQuery = "SELECT COUNT(*) AS rowcount FROM measurment";   
+           String countQuery = "SELECT COUNT(*) AS rowcount FROM measurements";   
            PreparedStatement ps = connection.prepareStatement(countQuery);
            ResultSet result = ps.executeQuery();  
            result.next();
@@ -840,5 +840,33 @@ public class DatabaseManager implements DataAccess {
                             System.out.println(ex);    
                         } 
        }
+
+    @Override
+    public void addDeviceQuery(String deviceID) throws SQLException {
+        try {
+                String query = " insert into devices (device_ID)"
+                        + " values (?)";
+                PreparedStatement pst = connection.prepareStatement(query);
+                pst.setString (1, deviceID);
+                pst.executeUpdate();
+                pst.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+
+    @Override
+    public boolean checkIfDeviceExistsQuery(String deviceID) throws SQLException {
+               String query = "SELECT* FROM devices WHERE device_ID = " + "\"" + deviceID  + "\"";
+                PreparedStatement pst = connection.prepareStatement(query);
+                ResultSet result = pst.executeQuery();
+
+                if (result.next()){   
+                     return true;
+                }
+                else{
+                    return false;
+             }
+    }
     
 }

@@ -248,6 +248,10 @@ public interface DataAccess {
     public String getTokenOwnerQuery(String username) throws SQLException;
     
     public void setTokenQuery(String username,String token) throws SQLException;
+    
+    public void addDeviceQuery(String deviceID)throws SQLException;
+   
+    public boolean checkIfDeviceExistsQuery(String deviceID) throws SQLException;
                  
 
 

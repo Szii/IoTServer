@@ -32,7 +32,7 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     
     String address = "eu2.cloud.thethings.industries:1883";
     String appId = "user-app@jcudp";
-    String accessKey = "NNSXS.J4N5MS7NOT5SOKD7SZQVAUR4EAW77SHKHUEUECY.YS2LWSWGNA7VUZDPUG2ANSQVW2QNXV7WIFFHO7JFEOKRH6I4JSAA";
+    String accessKey = "NNSXS.7M6KXOFU7WJ2M34MI5JOTI4PFMD55NKQWWO3ARQ.6VUC6RXGKWE7UKY6BF4T4W3OTOPFGZV7V4ZP5RYO7LNAN6DVBPVQ";
     MqttClient client;
     Publisher pub;
     DataAccess databaseManager;
@@ -53,27 +53,31 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
         } catch (MqttException ex) {
             Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+            pub = new Publisher();
+            pub.setClient(client);
     }
     
     @Override
     public void run(){
-      
+     
     }
     
     
     private void subscribeToTopics() throws MqttException{
         //client.subscribe("v3/+/devices/+/up",this);
-        client.subscribe("v3/+/devices/+/down/push", (topic, msg) -> {
-        byte[] payload = msg.getPayload();
-        System.out.println("Arrived.............");
-        });    
-        client.subscribe("#", this);
+      
+       // client.subscribe("#", this);
+        
+        client.subscribe("v3/user-app@jcudp/devices/otaatest/up", this);
+        
+      
         System.out.println("Subscribed to topics");
         
     }
     
     private void connect(){
         MqttConnectOptions options = new MqttConnectOptions();
+        
         options.setUserName(appId);
         options.setPassword(accessKey.toCharArray());     
         try {
@@ -87,10 +91,11 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
       
     }
     
-    public void sendMessage(String device,String message){
-            pub = new Publisher();
-            pub.setClient(client);
+    public void sendMessage(String device,String message){      
         try {
+            System.out.println("Trying to send message");
+            client.disconnectForcibly();
+            this.init();
             pub.sentMessageToDevice(device,message);
         } catch (MqttException ex) {
             Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -106,7 +111,7 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
 
     @Override
     public void connectionLost(Throwable cause) {
-       System.out.println("Connection lost");
+       System.out.println("Connection lost : " + cause.getMessage());
     }
 
     @Override
@@ -118,14 +123,37 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
         }
     }
     
-    private void evaluateMessageBasedOnType(String wholeMessageAsJSON) throws SQLException{
-        /*
-       String date = getCurrentDateTime();
-       ParsedMessage parsedMessgae = EndDeviceMessageParser.getInstance().parseJSON(wholeMessageAsJSON);
-       ArrayList<String> data = databaseManager.getMeasurementDataQuery(parsedMessgae.getDeviceID());
-     //  if()
-       databaseManager.addMeasurmentQuery(parsedMessgae.getDeviceID(), String.valueOf(parsedMessgae.getHumidity()), date);
-        */
+    public void evaluateMessageBasedOnType(String wholeMessageAsJSON) {
+        try {
+            System.out.println("Parsing message");
+            ParsedMessage parsedMessage  = EndDeviceMessageParser.getInstance().parseJSON(wholeMessageAsJSON);
+            if(parsedMessage.getHumidity() == -1){
+                return;
+            }
+            System.out.println("checking if device exists");
+            addDeviceIfNotExist(parsedMessage.getDeviceID());
+            int storedThreshold = Integer.parseInt(databaseManager.getThresoldQuery(parsedMessage.getDeviceID()));
+            int storedIrrigationTime = Integer.parseInt(databaseManager.getIrrigationTime(parsedMessage.getDeviceID()));
+            if(storedThreshold >=  parsedMessage.getHumidity() && storedIrrigationTime > 0){
+                System.out.println("Sending message");
+                sendMessage(parsedMessage.getDeviceID(),String.valueOf(storedIrrigationTime));
+            }
+            System.out.println("Saving measurements");
+            saveMeasurement(parsedMessage);
+        } catch (SQLException ex) {
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    private void addDeviceIfNotExist(String deviceID) throws SQLException{
+        if(!databaseManager.checkIfDeviceExistsQuery(deviceID)){
+            databaseManager.addDeviceQuery(deviceID);
+        }
+    }
+    
+    private void saveMeasurement(ParsedMessage data) throws SQLException{
+       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime());
     }
     
     private String getCurrentDateTime(){
