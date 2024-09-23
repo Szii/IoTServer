@@ -5,6 +5,7 @@
  */
 package com.irrigation.iotserver.Logic;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.irrigation.iotserver.Data.DataAccess;
 import com.irrigation.iotserver.Data.ParsedMessage;
 import com.irrigation.iotserver.Data.Publisher;
@@ -79,11 +80,13 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
         MqttConnectOptions options = new MqttConnectOptions();
         
         options.setUserName(appId);
-        options.setPassword(accessKey.toCharArray());     
+        options.setPassword(accessKey.toCharArray());  
+        options.setAutomaticReconnect(true);
         try {
             
             client.setCallback(this);
             client.connect(options);
+      
             
         } catch (MqttException ex) {
             Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -92,14 +95,8 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     }
     
     public void sendMessage(String device,String message){      
-        try {
-            System.out.println("Trying to send message");
-            client.disconnectForcibly();
-            this.init();
-            pub.sentMessageToDevice(device,message);
-        } catch (MqttException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       pub.sentMessageToDevice(device,message);
+
     }
 
     @Override
@@ -111,12 +108,9 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
 
     @Override
     public void connectionLost(Throwable cause) {
-        try {
-            client.disconnectForcibly();
-        } catch (MqttException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.init();
+           System.err.println("Connection lost: " + cause.getMessage());
+            cause.printStackTrace();
+          
     }
 
     @Override
@@ -131,7 +125,7 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     public void evaluateMessageBasedOnType(String wholeMessageAsJSON) {
         try {
             System.out.println("Parsing message");
-            ParsedMessage parsedMessage  = EndDeviceMessageParser.getInstance().parseJSON(wholeMessageAsJSON);
+            ParsedMessage parsedMessage  = EndDeviceMessageParser.getInstance().parseJSONData(wholeMessageAsJSON);
             if(parsedMessage.getHumidity() == -1){
                 return;
             }
@@ -149,6 +143,8 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
             System.out.println("Saving measurements");
             saveMeasurement(parsedMessage);
         } catch (SQLException ex) {
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JsonProcessingException ex) {
             Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         

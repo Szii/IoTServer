@@ -5,6 +5,9 @@
  */
 package com.irrigation.iotserver.Data;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  *
  * @author brune
@@ -14,6 +17,13 @@ public class ParsedMessage {
     int humidity = 0;
     int temperature = 0;
     String deviceID = "";
+    
+    @JsonCreator
+    public ParsedMessage(@JsonProperty("deviceID") String deviceID, @JsonProperty("temperature") int temperature, @JsonProperty("humidity") int humidity) {
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.deviceID = deviceID;
+    }
 
     public int getHumidity() {
         return humidity;

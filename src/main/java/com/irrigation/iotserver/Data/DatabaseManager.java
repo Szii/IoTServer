@@ -264,8 +264,24 @@ public class DatabaseManager implements DataAccess {
           }
           
           @Override
-          public void addMeasurementQuery(String sensor_ID,String measure,String date)throws SQLException{
-            int maxCount = 10000;  
+          public void addMeasurementQuery(String sensor_ID,String measure,String date,String type)throws SQLException{
+          truncateMeasurementTable();      
+              
+          String query = " insert into measurements (device_ID,date,value,type_ID)"
+             + " values (?, ?,?,?)";
+           PreparedStatement pst = connection.prepareStatement(query);
+           pst.setString (1, sensor_ID);
+           pst.setString (2, date);
+           pst.setString (3, measure);
+           pst.setInt(4, getTypeIDFromTypeNameQuery(type));
+        
+           pst.executeUpdate();
+           pst.close();
+          }
+          
+          
+          private void truncateMeasurementTable() throws SQLException{
+           int maxCount = 10000;  
               
            String countQuery = "SELECT COUNT(*) AS rowcount FROM measurements";   
            PreparedStatement ps = connection.prepareStatement(countQuery);
@@ -283,16 +299,14 @@ public class DatabaseManager implements DataAccess {
             
             ps.close();
            }
-              
-          String query = " insert into measurements (device_ID,date,value)"
-             + " values (?, ?,?)";
-           PreparedStatement pst = connection.prepareStatement(query);
-           pst.setString (1, sensor_ID);
-           pst.setString (2, date);
-           pst.setString (3, measure);
-        
-           pst.executeUpdate();
-           pst.close();
+          }
+          
+          private int getTypeIDFromTypeNameQuery(String typeName) throws SQLException{
+           String typeQuery = "SELECT type_ID FROM measurement_types WHERE type_name = ?";
+           PreparedStatement typePst = connection.prepareStatement(typeQuery);
+           typePst.setString(1, typeName);
+           ResultSet typeResult = typePst.executeQuery(); 
+           return typeResult.getInt("type_ID");
           }
                 
         @Override     

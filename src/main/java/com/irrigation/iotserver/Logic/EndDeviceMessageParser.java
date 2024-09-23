@@ -8,6 +8,8 @@ package com.irrigation.iotserver.Logic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.irrigation.Messages.MessageFormat.LoRaMessageDeserializer;
 import com.irrigation.iotserver.Data.ParsedMessage;
 import java.io.IOException;
 import java.util.HashSet;
@@ -23,7 +25,7 @@ public class EndDeviceMessageParser {
     
     private static EndDeviceMessageParser parser;
     
-    private EndDeviceMessageParser(){}
+    public  EndDeviceMessageParser(){}
     
     public static EndDeviceMessageParser getInstance(){
         if(parser == null){
@@ -32,8 +34,24 @@ public class EndDeviceMessageParser {
         return parser;
     }
     
+    public ParsedMessage parseJSONData(String dataInJSON) throws JsonProcessingException{
+
+             System.out.println("Parsing start");
+            ObjectMapper objectMapper = new ObjectMapper();
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(ParsedMessage.class, new LoRaMessageDeserializer());
+            objectMapper.registerModule(module);
+            System.out.println("Parsing read");
+            ParsedMessage measurement = objectMapper.readValue(dataInJSON, ParsedMessage.class);
+             System.out.println("Parsing end");
+            System.out.println("parsed humidity: " + measurement.getHumidity());
+            System.out.println("parsed temperature: " + measurement.getTemperature());
+            System.out.println("parsed id: " + measurement.getDeviceID());
+            return measurement;
+    }
+    
     public ParsedMessage parseJSON(String dataInJSON){
-        ParsedMessage parsedMessage = new ParsedMessage();
+       ParsedMessage parsedMessage = new ParsedMessage("a",1,1);
                 // Create an ObjectMapper instance
         ObjectMapper objectMapper = new ObjectMapper();
 

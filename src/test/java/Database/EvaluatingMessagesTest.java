@@ -37,10 +37,10 @@ public class EvaluatingMessagesTest {
     
     @Test
     public void evaluateMessageBasedOnType() {
-        ParsedMessage parsedMessage  = new ParsedMessage();
+        ParsedMessage parsedMessage;
         try {
             System.out.println("Parsing message");
-            parsedMessage  = new ParsedMessage();
+            parsedMessage = new ParsedMessage("",1,1);
             parsedMessage.setDeviceID("eui-2222");
             parsedMessage.setHumidity(50);
             System.out.println("checking if device exists");
@@ -69,7 +69,7 @@ public class EvaluatingMessagesTest {
     }
     
     private void saveMeasurement(ParsedMessage data) throws SQLException{
-       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime());
+       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime(),"");
     }
     
     private String getCurrentDateTime(){

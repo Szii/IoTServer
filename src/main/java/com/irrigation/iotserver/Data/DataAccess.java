@@ -97,9 +97,10 @@ public interface DataAccess {
      * @param sensor_ID ID of sensor
      * @param measure measured value
      * @param date date of measurement
+     * @param type type of data
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public void addMeasurementQuery(String sensor_ID,String measure,String date)throws SQLException;
+    public void addMeasurementQuery(String sensor_ID,String measure,String date, String type)throws SQLException;
     /**
      * Method unregister unit by modifing data source
      * @param unit_ID ID of unit
