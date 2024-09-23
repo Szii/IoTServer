@@ -109,10 +109,11 @@ public interface DataAccess {
     /**
      * Method gets last measured value for sensor from data source
      * @param sensor_ID sensor ID
+     * @param type type of measurememt
      * @return last measured value
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public String getLastMeasurementQuery(String sensor_ID) throws SQLException;
+    public ArrayList<String> getLastMeasurementQuery(String sensor_ID,String type) throws SQLException;
     /**
      * Method checks the data source if sensor belongs to unit
      * @param sensor_ID ID of sensor
@@ -190,18 +191,20 @@ public interface DataAccess {
      * Method checks the data source for all measurements of sensor
      * @param sensorID ID of sensor
      * @return Measurements of sensor
+     * @param type type of measurement 
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public ArrayList<String> getMeasurementDataQuery (String sensorID) throws SQLException;
+    public ArrayList<String> getMeasurementDataQuery (String sensorID, String type) throws SQLException;
     /**
      * Method checks the data source for all measurements of sensor in time interval
      * @param sensorID ID of sensor
      * @param from lower bound
      * @param to higher bound
+     * @param type type of measurement 
      * @return Measurements of sensor in time interval
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public ArrayList<String> getMeasurementDataInRange (String sensorID,String from,String to) throws SQLException;
+    public ArrayList<String> getMeasurementDataInRange (String sensorID,String from,String to, String type) throws SQLException;
     
     /**
      * Gets irrigation time for a sensor from data source

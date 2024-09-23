@@ -69,6 +69,7 @@ public class Controller {
                     .setObject(this.getAvailableDevicesBasedOnUsername(username))
                     .build();
         } catch (SQLException ex) {
+           
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
         }
@@ -80,8 +81,8 @@ public class Controller {
             String username = databaseManager.getTokenOwnerQuery(getToken(token));
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
-                    .setObject(this.getAvailableDevicesBasedOnUsernameAndGroup
-                        (databaseManager.getGroupID(username,groupName)))
+                    .setObject(this.getAvailableDevicesBasedOnUsernameAndGroup(username,
+                        (databaseManager.getGroupID(username,groupName))))
                     .build();
                             
         } catch (SQLException ex) {
@@ -156,7 +157,7 @@ public class Controller {
                         .build();
                   
         } catch (SQLException ex) {
-            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
         }
     }
@@ -171,7 +172,7 @@ public class Controller {
                         .build();
                   
         } catch (SQLException ex) {
-            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
         }
     }
@@ -212,18 +213,18 @@ public class Controller {
     }
     
     @GetMapping("/measurement/get")
-    public Payload getMeasurement(@RequestHeader("Authorization") String token,  @RequestParam (required = true)  String device, @RequestParam (required = false)  String from,@RequestParam (required = false)  String to){
+    public Payload getMeasurement(@RequestHeader("Authorization") String token,  @RequestParam (required = true)  String device, @RequestParam (required = false)  String from,@RequestParam (required = false)  String to, @RequestParam (required = true)  String type){
         System.out.println("from is: " + from + " to is: " + to);
         try {
             String username = checkAuthorisation(getToken(token));
             if(from!= null && to != null){
                     return new Payload.PayloadBuilder()
-                    .setContent(databaseManager.getMeasurementDataInRange(device,from,to))
+                    .setContent(databaseManager.getMeasurementDataInRange(device,from,to,type))
                     .setCode(Code.SUCCESS)
                     .build();
             }
             return new Payload.PayloadBuilder()
-                    .setContent(databaseManager.getMeasurementDataQuery(device))
+                    .setContent(databaseManager.getMeasurementDataQuery(device,type))
                     .setCode(Code.SUCCESS)
                     .build();
             
@@ -275,21 +276,22 @@ public class Controller {
             }
     }
     
-    
-    
-    
-        private ArrayList<Device> getAvailableDevicesBasedOnUsername(String username){
+  private ArrayList<Device> getAvailableDevicesBasedOnUsername(String username){
          ArrayList<Device> devices = new ArrayList();
         try {
             for (String sensorID : databaseManager.getAvailableSensors(username)){
+                ArrayList<String> humidityMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_HUMIDITY");
+                ArrayList<String> temperatureMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_TEMPERATURE");
                 Device device = new Device.DeviceBuilder()
                         .setID(sensorID)
                         .setNickname(databaseManager.getSensorNickname(sensorID))
                         .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
                         .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(1))
-                        .setLastMeasuredValue(databaseManager.getLastMeasurementQuery(sensorID))
+                        .setHumidityValue(humidityMeasurement.get(0))
                         .setThreshold(databaseManager.getThresoldQuery(sensorID))
-                        .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
+                        .setHumidityDate(humidityMeasurement.get(1))
+                        .setTemperatureDate(temperatureMeasurement.get(1))
+                        .setTemperatureValue(temperatureMeasurement.get(0))
                         .build();
                 
                 devices.add(device);
@@ -299,23 +301,29 @@ public class Controller {
             return devices;
                     
                     } catch (SQLException ex) {
-            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             return devices;
         }
     }
     
-        private ArrayList<Device> getAvailableDevicesBasedOnUsernameAndGroup(String group){
+        private ArrayList<Device> getAvailableDevicesBasedOnUsernameAndGroup(String group,String type){
          ArrayList<Device> devices = new ArrayList();
+
         try {
             for (String sensorID :  databaseManager.getAllDevicesInGroupQuery(group)){
+                ArrayList<String> humidityMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_HUMIDITY");
+                ArrayList<String> temperatureMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_TEMPERATURE");
+                
                 Device device = new Device.DeviceBuilder()
                         .setID(sensorID)
                         .setNickname(databaseManager.getSensorNickname(sensorID))
                         .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
                         .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(1))
-                        .setLastMeasuredValue(databaseManager.getLastMeasurementQuery(sensorID))
+                        .setHumidityValue(humidityMeasurement.get(0))
                         .setThreshold(databaseManager.getThresoldQuery(sensorID))
-                        .setDate(databaseManager.getMeasurementDataQuery(sensorID).get(1))
+                        .setHumidityDate(humidityMeasurement.get(1))
+                        .setTemperatureDate(temperatureMeasurement.get(1))
+                        .setTemperatureValue(temperatureMeasurement.get(0))
                         .build();
                 
                 devices.add(device);
@@ -325,7 +333,7 @@ public class Controller {
             return devices;
                     
                     } catch (SQLException ex) {
-            Logger.getLogger(UserConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             return devices;
         }
         }

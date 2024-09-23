@@ -51,7 +51,7 @@ public class EvaluatingMessagesTest {
             }
             System.out.println("Saving measurements");
             saveMeasurement(parsedMessage);
-            assertEquals(String.valueOf(50),databaseManager.getLastMeasurementQuery(parsedMessage.getDeviceID()));
+            assertEquals(String.valueOf(50),databaseManager.getLastMeasurementQuery(parsedMessage.getDeviceID(),"TYPE_HUMIDITY").get(0));
         } catch (SQLException ex) {
             Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
         }

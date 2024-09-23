@@ -315,19 +315,28 @@ public class DatabaseManager implements DataAccess {
         }
            
          @Override
-         public String getLastMeasurementQuery(String sensor_ID) throws SQLException{
-            String query = "SELECT* FROM measurements WHERE device_ID = " + "\"" +  sensor_ID + "\"";
+         public ArrayList<String> getLastMeasurementQuery(String sensor_ID,String type) throws SQLException{
+          String query = "SELECT* FROM measurements JOIN measurement_types ON measurement_types.type_ID = measurements.type_ID WHERE device_ID = ? AND measurement_types.type_name = ?";
+          
           PreparedStatement pst = connection.prepareStatement(query);
-           ResultSet result = pst.executeQuery();
+          pst.setString(1, sensor_ID);
+          pst.setString(2, type);
+          ResultSet result = pst.executeQuery();
+          ArrayList<String> measuredData = new ArrayList();
+          String val;
         
            while(result.next()){
                if (result.isLast()){
-                     String val = result.getString("value");                          
-                     pst.close();
-                     return val;
+                        val = result.getString("value");
+                        measuredData.add(val);
+                        val = result.getString("date");
+                        measuredData.add(val);
+                     return measuredData;
                }      
            }
-           return "";
+                        measuredData.add("");
+                        measuredData.add("");
+                     return measuredData;
         }
          @Override
          public ArrayList<String> getAllDevicesInGroupQuery(String group) throws SQLException{
@@ -672,13 +681,14 @@ public class DatabaseManager implements DataAccess {
             }
 
     @Override
-    public ArrayList<String> getMeasurementDataQuery(String sensorID) throws SQLException {
+    public ArrayList<String> getMeasurementDataQuery(String sensorID,String type) throws SQLException {
         System.out.println("getting measurement for sensor" + sensorID);
         ArrayList<String> measuredData = new ArrayList<>();
         //String query = "SELECT* FROM measurment WHERE sensor_ID = ?";
-          String query = "SELECT measurements.value,measurements.date FROM measurements LEFT JOIN devices ON devices.device_ID = measurements.device_ID WHERE devices.device_ID = ?";
+          String query = "SELECT measurements.value,measurements.date FROM measurements INNER JOIN measurement_types ON measurements.type_ID = measurement_types.type_ID  WHERE device_ID = ? AND measurement_types.type_name = ?";
               PreparedStatement pst = connection.prepareStatement(query);
               pst.setString(1, sensorID);
+              pst.setString(2,type);
                ResultSet result = pst.executeQuery();
                String val = "";
                    while (result.next()){
@@ -696,14 +706,15 @@ public class DatabaseManager implements DataAccess {
     }
     
     @Override
-    public ArrayList<String> getMeasurementDataInRange(String sensorID,String from, String to) throws SQLException {
+    public ArrayList<String> getMeasurementDataInRange(String sensorID,String from, String to,String type) throws SQLException {
         ArrayList<String> measuredData = new ArrayList<>();
-        String query = "SELECT* FROM measurements WHERE device_ID = ? AND date BETWEEN ? AND ?";
+        String query = "SELECT* FROM measurements INNER JOIN measurement_types ON measurements.type_ID = measurement_types.type_ID  WHERE device_ID = ? AND measurement_types.type_name = ? AND date BETWEEN ? AND ?";
         
               PreparedStatement pst = connection.prepareStatement(query);
               pst.setString(1, sensorID);
               pst.setString(2, from);
               pst.setString(3, to);
+              pst.setString(4,type);
                ResultSet result = pst.executeQuery();
                String val = "";
                    while (result.next()){

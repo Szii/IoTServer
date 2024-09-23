@@ -111,7 +111,12 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
 
     @Override
     public void connectionLost(Throwable cause) {
-       System.out.println("Connection lost : " + cause.getMessage());
+        try {
+            client.disconnectForcibly();
+        } catch (MqttException ex) {
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.init();
     }
 
     @Override
@@ -138,6 +143,9 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
                 System.out.println("Sending message");
                 sendMessage(parsedMessage.getDeviceID(),String.valueOf(storedIrrigationTime));
             }
+            else{
+               sendMessage(parsedMessage.getDeviceID(),String.valueOf(0)); 
+            }
             System.out.println("Saving measurements");
             saveMeasurement(parsedMessage);
         } catch (SQLException ex) {
@@ -153,7 +161,8 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     }
     
     private void saveMeasurement(ParsedMessage data) throws SQLException{
-       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime());
+       //databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime());
+       
     }
     
     private String getCurrentDateTime(){

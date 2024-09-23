@@ -18,25 +18,33 @@ public class Device implements Serializable  {
     
     private final String ID;
     private final String nickname;
-    private final String lastMeasuredValue;
     private final String group;
     private final String irrigationTime;
     private final String threshold;
-    private final String date;
+    private final String humidity_date;
+    private final String temperature_date;
+    private final String temperature_value;
+    private final String humidity_value;
 
-    public String getDate() {
-        return date;
+    public String getHumidityDate() {
+        return humidity_date;
+    }
+    
+      public String getTemperatureDate() {
+        return temperature_date;
     }
     
      
     private Device(DeviceBuilder builder){
         this.ID = builder.ID;
         this.nickname =  builder.nickname;
-        this.lastMeasuredValue = builder.lastMeasuredValue;
+        this.humidity_value = builder.humidity_value;
+        this.temperature_value = builder.temperature_value;
         this.group = builder.group;
         this.irrigationTime = builder.irrigationTime;
         this.threshold = builder.threshold;
-        this.date = builder.date;
+        this.humidity_date = builder.humidity_date;
+        this.temperature_date = builder.temperature_date;
     }
 
     public String getID() {
@@ -47,9 +55,14 @@ public class Device implements Serializable  {
         return nickname;
     }
 
-    public String getLastMeasuredValue() {
-        return lastMeasuredValue;
+    public String getHumidityValue() {
+        return humidity_value;
     }
+    
+      public String getTemperatureValue() {
+        return temperature_value;
+    }
+
 
     public String getGroup() {
         return group;
@@ -74,11 +87,13 @@ public class Device implements Serializable  {
        
     private String ID;
     private String nickname;
-    private String lastMeasuredValue;
     private String group;
     private String irrigationTime;
     private String threshold;
-    private String date;
+    private String humidity_date;
+    private String temperature_date;
+    private String temperature_value;
+    private String humidity_value;
 
         public DeviceBuilder setID(String ID) {
             this.ID = ID;
@@ -90,8 +105,13 @@ public class Device implements Serializable  {
             return this;
         }
 
-        public DeviceBuilder setLastMeasuredValue(String lastMeasuredValue) {
-            this.lastMeasuredValue = lastMeasuredValue;
+        public DeviceBuilder setHumidityValue(String lastMeasuredValue) {
+            this.humidity_value = lastMeasuredValue;
+            return this;
+        }
+        
+        public DeviceBuilder setTemperatureValue(String lastMeasuredValue) {
+            this.temperature_value = lastMeasuredValue;
             return this;
         }
 
@@ -110,8 +130,13 @@ public class Device implements Serializable  {
             return this;
         }
 
-        public DeviceBuilder setDate(String date) {
-            this.date = date;
+        public DeviceBuilder setHumidityDate(String date) {
+            this.humidity_date = date;
+            return this;
+        }
+        
+        public DeviceBuilder setTemperatureDate(String date) {
+            this.temperature_date = date;
             return this;
         }
 

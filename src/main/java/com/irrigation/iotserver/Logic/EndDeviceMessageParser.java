@@ -43,14 +43,11 @@ public class EndDeviceMessageParser {
             System.out.println("parsed devui: " + devEui);
             parsedMessage.setDeviceID(devEui);
             JsonNode payload = rootNode.path("uplink_message").path("decoded_payload").path("bytes");
-            int payloadValue = -1;
-
-            for (int i = 0; i < payload.size(); i++) {
-                payloadValue = payload.get(i).asInt(); 
-            }
-            System.out.println("parsed humidity: " + payloadValue);
-              parsedMessage.setHumidity(payloadValue);
-             return parsedMessage;
+            parsedMessage.setHumidity(payload.get(0).asInt());
+            parsedMessage.setTemperature(payload.get(01).asInt());
+            System.out.println("parsed humidity: " + parsedMessage.getHumidity());
+            System.out.println("parsed temperature: " + parsedMessage.getTemperature());
+            return parsedMessage;
             
 
         } catch (IOException e) {

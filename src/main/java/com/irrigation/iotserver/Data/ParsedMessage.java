@@ -12,10 +12,19 @@ package com.irrigation.iotserver.Data;
 public class ParsedMessage {
     
     int humidity = 0;
+    int temperature = 0;
     String deviceID = "";
 
     public int getHumidity() {
         return humidity;
+    }
+
+    public int getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(int temperature) {
+        this.temperature = temperature;
     }
 
     public void setHumidity(int humidity) {
