@@ -79,9 +79,11 @@ public class Controller {
     public Payload getGroupDevices(@RequestHeader("Authorization") String token, @RequestParam(required = true) String groupName) {
         try {
             String username = databaseManager.getTokenOwnerQuery(getToken(token));
+            String groupID = databaseManager.getGroupID(username,groupName);
+            System.out.println("got groupID for group " + groupName + " ID " + groupID);
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
-                    .setObject(this.getAvailableDevicesBasedOnUsernameAndGroup(username,
+                    .setObject(this.getAvailableDevicesBasedOnGroup(
                         (databaseManager.getGroupID(username,groupName))))
                     .build();
                             
@@ -306,8 +308,8 @@ public class Controller {
         }
     }
     
-        private ArrayList<Device> getAvailableDevicesBasedOnUsernameAndGroup(String group,String type){
-         ArrayList<Device> devices = new ArrayList();
+        private ArrayList<Device> getAvailableDevicesBasedOnGroup(String group){
+         ArrayList<Device> devices = new ArrayList();;
 
         try {
             for (String sensorID :  databaseManager.getAllDevicesInGroupQuery(group)){

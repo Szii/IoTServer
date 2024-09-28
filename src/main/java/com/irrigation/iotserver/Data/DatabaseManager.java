@@ -356,6 +356,7 @@ public class DatabaseManager implements DataAccess {
          public ArrayList<String> getAllDevicesInGroupQuery(String group) throws SQLException{
              ArrayList<String> device_IDs = new ArrayList();
              String query = "SELECT * FROM devices WHERE group_ID = ?";
+             System.out.println("selecting devices for groupID " + group);
               PreparedStatement pst = connection.prepareStatement(query);
               pst.setString(1, group);
               ResultSet result = pst.executeQuery();

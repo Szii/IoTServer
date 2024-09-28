@@ -29,27 +29,13 @@ public class LoRaMessageDeserializer extends StdDeserializer<ParsedMessage> {
 
     @Override
     public ParsedMessage deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
-        JsonNode node = jp.getCodec().readTree(jp);
+         throws IOException, JsonProcessingException {
+         JsonNode node = jp.getCodec().readTree(jp);
+         String deviceId = node.path("end_device_ids").path("device_id").asText();
+         JsonNode decodedPayloadNode = node.path("uplink_message").path("decoded_payload");
 
-
-// Print the entire node to confirm the structure
-System.out.println("Full JSON node: " + node.toString());
-    // Extract the device ID from the correct path
-   String deviceId = node.path("end_device_ids").path("device_id").asText();
-   if (deviceId.isEmpty()) {
-       throw new IllegalArgumentException("Device ID is missing or empty");
-   }
-
-   // Extract the decoded payload from the correct path
-   JsonNode decodedPayloadNode = node.path("uplink_message").path("decoded_payload");
-   if (decodedPayloadNode.isMissingNode()) {
-       throw new IllegalArgumentException("Decoded payload is missing");
-   }
-
-// Extract temperature and humidity from the decoded payload
-    int temperature = decodedPayloadNode.path("Temperature").asInt();  // Temperature is a field
-    int humidity = decodedPayloadNode.path("Humidity").asInt();
-    return new ParsedMessage(deviceId, temperature, humidity);
+        int temperature = decodedPayloadNode.path("Temperature").asInt();  
+        int humidity = decodedPayloadNode.path("Humidity").asInt();
+        return new ParsedMessage(deviceId, temperature, humidity);
     }
 }

@@ -109,7 +109,12 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     @Override
     public void connectionLost(Throwable cause) {
            System.err.println("Connection lost: " + cause.getMessage());
-            cause.printStackTrace();
+           cause.printStackTrace();
+        try {
+            client.reconnect();
+        } catch (MqttException ex) {
+            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
           
     }
 
