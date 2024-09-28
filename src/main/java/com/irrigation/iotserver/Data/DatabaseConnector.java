@@ -25,7 +25,7 @@ public class DatabaseConnector {
  
 
         // Specify the connection URL, username, and password
-          final String databaseURL = "jdbc:mysql://" +address+ "localhost/diplomova_prace_db?allowMultiQueries=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+          final String databaseURL = "jdbc:mysql://" +address+ "/diplomova_prace_db?allowMultiQueries=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
           final String user = "root";
           final String password = "root";
 
