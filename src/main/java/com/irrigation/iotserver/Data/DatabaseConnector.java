@@ -17,15 +17,15 @@ public class DatabaseConnector {
     
     
     //Connect to DB
-    public DatabaseConnector() throws ClassNotFoundException, SQLException{
-           connect();
+    public DatabaseConnector(String address) throws ClassNotFoundException, SQLException{
+           connect(address);
     }
     
-    public Connection connect() throws ClassNotFoundException, SQLException{
+    public Connection connect(String address) throws ClassNotFoundException, SQLException{
  
 
         // Specify the connection URL, username, and password
-          final String databaseURL = "jdbc:mysql://localhost/diplomova_prace_db?allowMultiQueries=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+          final String databaseURL = "jdbc:mysql://" +address+ "localhost/diplomova_prace_db?allowMultiQueries=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
           final String user = "root";
           final String password = "root";
 

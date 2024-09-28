@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 public class Program {
     static DataAccess databaseManager;
     OutboundManager dataConnector;
+    String databaseAddress = "localhost";
     public Program(){
         prepareConnectionToDatabase();
         prepareConnectionToLoRaServer();
@@ -41,7 +42,7 @@ public class Program {
     
     private void prepareConnectionToDatabase(){
          try {
-            databaseManager = new DatabaseManager(new DatabaseConnector().connect());
+            databaseManager = new DatabaseManager(new DatabaseConnector(databaseAddress).connect(databaseAddress));
             
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);

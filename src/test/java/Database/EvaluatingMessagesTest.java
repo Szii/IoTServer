@@ -8,9 +8,7 @@ package Database;
 import com.irrigation.iotserver.Data.DatabaseConnector;
 import com.irrigation.iotserver.Data.DatabaseManager;
 import com.irrigation.iotserver.Data.ParsedMessage;
-import com.irrigation.iotserver.Logic.EndDeviceMessageParser;
 import com.irrigation.iotserver.Logic.OutboundManager;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,10 +24,11 @@ import org.junit.jupiter.api.Test;
  */
 public class EvaluatingMessagesTest {
     static DatabaseManager databaseManager;
+    static String databaseAddress = "localhost";
     
     @BeforeAll
     public static void init() throws ClassNotFoundException, SQLException{ 
-        databaseManager = new DatabaseManager(new DatabaseConnector().connect());
+        databaseManager = new DatabaseManager(new DatabaseConnector(databaseAddress).connect(databaseAddress));
     }
     
 
