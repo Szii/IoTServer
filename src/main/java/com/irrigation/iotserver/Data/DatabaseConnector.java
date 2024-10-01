@@ -5,29 +5,36 @@
  */
 package com.irrigation.iotserver.Data;
 
+import com.irrigation.iotserver.Configuration.DatabaseConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author brune
  */
+
+@Service
 public class DatabaseConnector {
-    
+    @Autowired
+    DatabaseConfig conf;
     
     //Connect to DB
-    public DatabaseConnector(String address) throws ClassNotFoundException, SQLException{
-           connect(address);
+    public DatabaseConnector() throws ClassNotFoundException, SQLException{
     }
     
-    public Connection connect(String address) throws ClassNotFoundException, SQLException{
- 
+    public Connection connect() throws ClassNotFoundException, SQLException{
+         System.out.println(conf.username);
+         System.out.println(conf.password);
+         System.out.println(conf.address);
 
         // Specify the connection URL, username, and password
-          final String databaseURL = "jdbc:mysql://" +address+ "/diplomova_prace_db?allowMultiQueries=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-          final String user = "root";
-          final String password = "root";
+          final String databaseURL = "jdbc:mysql://" +conf.address+ "/diplomova_prace_db?allowMultiQueries=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+          final String user = conf.username;
+          final String password = conf.password;
 
          return DriverManager.getConnection(databaseURL, user, password);
     }

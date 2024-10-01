@@ -5,30 +5,40 @@
  */
 package Database;
 
+import com.irrigation.iotserver.Configuration.DatabaseConfig;
 import com.irrigation.iotserver.Data.DatabaseConnector;
 import com.irrigation.iotserver.Data.DatabaseManager;
 import com.irrigation.iotserver.Data.ParsedMessage;
 import com.irrigation.iotserver.Logic.OutboundManager;
+import com.irrigation.iotserver.Main;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  *
  * @author brune
  */
+
+@SpringBootTest(classes = {DatabaseConnector.class,DatabaseConfig.class})
 public class EvaluatingMessagesTest {
-    static DatabaseManager databaseManager;
-    static String databaseAddress = "localhost";
     
-    @BeforeAll
-    public static void init() throws ClassNotFoundException, SQLException{ 
-        databaseManager = new DatabaseManager(new DatabaseConnector(databaseAddress).connect(databaseAddress));
+   @Autowired
+   DatabaseConnector connector;
+   
+    static DatabaseManager databaseManager;
+    String databaseAddress;
+    
+    @BeforeEach
+    public  void init() throws ClassNotFoundException, SQLException{ 
+       databaseManager = new DatabaseManager(connector.connect());
     }
     
 

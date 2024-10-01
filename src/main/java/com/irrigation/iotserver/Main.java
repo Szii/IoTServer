@@ -8,6 +8,7 @@ package com.irrigation.iotserver;
 import java.util.Collections;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 /**
@@ -15,13 +16,14 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  * @author brune
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class Main extends SpringBootServletInitializer{
 
     public static void main(String [] args){ 
-      new Program();
-               SpringApplication app = new SpringApplication(Main.class);
+        SpringApplication app = new SpringApplication(Main.class);
         app.setDefaultProperties(Collections
-          .singletonMap("server.port", "8083"));
+          .singletonMap("server.port", "9090"));
         app.run(args);
+   
     }    
 }
