@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class Program {
-    static DataAccess databaseManager;
    
     DatabaseConnector connector;
     
@@ -40,16 +39,14 @@ public class Program {
 //        dataConnector.evaluateMessageBasedOnType(jsonPayload);
     } 
     
-    public static DataAccess getDatabaseManager(){
-        return databaseManager;
-    }
     
     private void prepareConnectionToLoRaServer(){
-        dataConnector = new OutboundManager(databaseManager);
-        dataConnector.start();
+      //  dataConnector = new OutboundManager(databaseManager);
+     //   dataConnector.start();
     }
     
     private void prepareConnectionToDatabase(){
+        /*
          try {
             databaseManager = new DatabaseManager(connector.connect());
             
@@ -60,9 +57,6 @@ public class Program {
         }
     }
     
-    private void addUser() throws SQLException{
-        databaseManager.addUserQuery("test", "12345");
+    */
     }
-    
-    
 }

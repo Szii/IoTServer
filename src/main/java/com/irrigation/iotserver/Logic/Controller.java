@@ -38,8 +38,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class Controller {
     DataAccess databaseManager;
-    public Controller(){
-       this.databaseManager =  Program.getDatabaseManager();
+    public Controller(DataAccess databaseManager){
+       this.databaseManager =  databaseManager;
     }
     
     private String getToken(String token){

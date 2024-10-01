@@ -12,13 +12,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author brune
  */
+@Service
 public class DatabaseManager implements DataAccess {
     private final Connection connection;
+    
     
     public DatabaseManager(Connection connection){
         this.connection = connection;

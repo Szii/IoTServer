@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,6 +27,7 @@ public class DatabaseConnector {
     public DatabaseConnector() throws ClassNotFoundException, SQLException{
     }
     
+    @Bean
     public Connection connect() throws ClassNotFoundException, SQLException{
          System.out.println(conf.username);
          System.out.println(conf.password);

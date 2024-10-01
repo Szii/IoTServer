@@ -6,6 +6,7 @@
 package com.irrigation.iotserver.Logic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.irrigation.iotserver.Configuration.LoraConfig;
 import com.irrigation.iotserver.Data.DataAccess;
 import com.irrigation.iotserver.Data.ParsedMessage;
 import com.irrigation.iotserver.Data.Publisher;
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -23,30 +25,45 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Retrieve and sends MQTT messages. These messages are processed and data are stored or got from DB
  * @author brune
  */
+@Service
 public class OutboundManager extends Thread implements IMqttMessageListener, MqttCallback  {
     
-    
-    String address = "eu2.cloud.thethings.industries:1883";
-    String appId = "user-app@jcudp";
-    String accessKey = "NNSXS.7M6KXOFU7WJ2M34MI5JOTI4PFMD55NKQWWO3ARQ.6VUC6RXGKWE7UKY6BF4T4W3OTOPFGZV7V4ZP5RYO7LNAN6DVBPVQ";
     MqttClient client;
     Publisher pub;
     DataAccess databaseManager;
+   
+    LoraConfig conf;
+    String address;
+    
+    
 
-    public OutboundManager(DataAccess databaseManager){
+    public OutboundManager(DataAccess databaseManager,LoraConfig conf){
         this.databaseManager = databaseManager;
+        this.conf = conf;
+        address = conf.address;
+        System.out.println(conf.address);
+         System.out.println(conf.appId);
+          System.out.println(conf.key);
         init();
+    }
+    
+    @PostConstruct
+    public void postConstructor() {
+        System.out.println("Outbound manager started");
+        this.start();  // Start the thread after the Spring context is initialized
     }
     
     private void init(){
         try {
             client = new MqttClient(
-                    "tcp://eu2.cloud.thethings.industries:1883", //URI
+                    "tcp://" + conf.address, //URI
                     MqttClient.generateClientId(), //ClientId
                     new MemoryPersistence()); //Persistence
             connect();
@@ -79,8 +96,8 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
     private void connect(){
         MqttConnectOptions options = new MqttConnectOptions();
         
-        options.setUserName(appId);
-        options.setPassword(accessKey.toCharArray());  
+        options.setUserName(conf.appId);
+        options.setPassword(conf.key.toCharArray());  
         options.setAutomaticReconnect(true);
         try {
             
