@@ -6,10 +6,10 @@
 package Database;
 
 import com.irrigation.iotserver.Configuration.DatabaseConfig;
-import com.irrigation.iotserver.Data.DatabaseConnector;
-import com.irrigation.iotserver.Data.DatabaseManager;
+import com.irrigation.iotserver.Configuration.DatabaseConnector;
+import com.irrigation.iotserver.Services.DatabaseService;
 import com.irrigation.iotserver.Data.ParsedMessage;
-import com.irrigation.iotserver.Logic.OutboundManager;
+import com.irrigation.iotserver.Services.LoraService;
 import com.irrigation.iotserver.Main;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -33,12 +33,12 @@ public class EvaluatingMessagesTest {
    @Autowired
    DatabaseConnector connector;
    
-    static DatabaseManager databaseManager;
+    static DatabaseService databaseManager;
     String databaseAddress;
     
     @BeforeEach
     public  void init() throws ClassNotFoundException, SQLException{ 
-       databaseManager = new DatabaseManager(connector.connect());
+       databaseManager = new DatabaseService(connector.connect());
     }
     
 
@@ -62,7 +62,7 @@ public class EvaluatingMessagesTest {
             saveMeasurement(parsedMessage);
             assertEquals(String.valueOf(50),databaseManager.getLastMeasurementQuery(parsedMessage.getDeviceID(),"TYPE_HUMIDITY").get(0));
         } catch (SQLException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         

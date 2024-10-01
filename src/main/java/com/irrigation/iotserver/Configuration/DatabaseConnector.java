@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Data;
+package com.irrigation.iotserver.Configuration;
 
 import com.irrigation.iotserver.Configuration.DatabaseConfig;
 import java.sql.Connection;
@@ -11,14 +11,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author brune
  */
 
-@Service
+@Component
 public class DatabaseConnector {
     @Autowired
     DatabaseConfig conf;

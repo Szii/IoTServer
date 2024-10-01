@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Data;
+package com.irrigation.iotserver.Services;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,11 +19,11 @@ import org.springframework.stereotype.Service;
  * @author brune
  */
 @Service
-public class DatabaseManager implements DataAccess {
+public class DatabaseService implements DataAccess {
     private final Connection connection;
     
     
-    public DatabaseManager(Connection connection){
+    public DatabaseService(Connection connection){
         this.connection = connection;
     }
     
@@ -81,7 +81,7 @@ public class DatabaseManager implements DataAccess {
 
                 return true;
             } catch (SQLException ex) {
-                Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
           }
@@ -880,7 +880,7 @@ public class DatabaseManager implements DataAccess {
                 pst.executeUpdate();
                 pst.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
             }
     }
 

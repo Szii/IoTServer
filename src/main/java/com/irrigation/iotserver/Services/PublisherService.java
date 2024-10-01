@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Data;
+package com.irrigation.iotserver.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,17 +15,19 @@ import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author brune
  */
-public class Publisher {
+@Service
+public class PublisherService {
     
     MqttClient client;
     String MESSAGE_PRESET = "{\"downlinks\":[{\"f_port\": 15,\"frm_payload\":\"vu8=\",\"priority\": \"NORMAL\"}]}";
     
-    public Publisher(){
+    public PublisherService(){
         
     }
 
@@ -45,7 +47,7 @@ public class Publisher {
             ((ObjectNode) downlinkNode).put("frm_payload", convertToBase64(dataToSent)); 
             return  objectMapper.writeValueAsString(rootNode);
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(Publisher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PublisherService.class.getName()).log(Level.SEVERE, null, ex);
             return  "";
         }
     }
@@ -75,7 +77,7 @@ public class Publisher {
             client.publish("v3/user-app@jcudp/devices/"+deviceID+"/down/push", createMessage(message));
             System.out.println("message " + message + " sent");
         } catch (Exception ex) {
-            Logger.getLogger(Publisher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PublisherService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Logic;
+package com.irrigation.iotserver.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.irrigation.iotserver.Configuration.LoraConfig;
-import com.irrigation.iotserver.Data.DataAccess;
 import com.irrigation.iotserver.Data.ParsedMessage;
-import com.irrigation.iotserver.Data.Publisher;
+import com.irrigation.iotserver.Configuration.EndDeviceMessageParser;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,24 +32,26 @@ import org.springframework.stereotype.Service;
  * @author brune
  */
 @Service
-public class OutboundManager extends Thread implements IMqttMessageListener, MqttCallback  {
+public class LoraService extends Thread implements IMqttMessageListener, MqttCallback  {
     
-    MqttClient client;
-    Publisher pub;
-    DataAccess databaseManager;
-   
-    LoraConfig conf;
-    String address;
+
+    private final PublisherService pub;
+    private final DataAccess databaseManager;
+    private final EndDeviceMessageParser parser;
+    private final LoraConfig conf;
+
+    private MqttClient client;
     
     
 
-    public OutboundManager(DataAccess databaseManager,LoraConfig conf){
+    public LoraService(DataAccess databaseManager,LoraConfig conf,PublisherService pub,EndDeviceMessageParser parser){
         this.databaseManager = databaseManager;
         this.conf = conf;
-        address = conf.address;
+        this.pub = pub;
+        this.parser = parser;
         System.out.println(conf.address);
-         System.out.println(conf.appId);
-          System.out.println(conf.key);
+        System.out.println(conf.appId);
+        System.out.println(conf.key);
         init();
     }
     
@@ -69,9 +70,8 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
             connect();
             subscribeToTopics();
         } catch (MqttException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
-            pub = new Publisher();
             pub.setClient(client);
     }
     
@@ -106,7 +106,7 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
       
             
         } catch (MqttException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
       
     }
@@ -130,7 +130,7 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
         try {
             client.reconnect();
         } catch (MqttException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
           
     }
@@ -140,14 +140,14 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
         try {
             System.out.println("Message delivered: " + token.getMessage().toString());
         } catch (MqttException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     public void evaluateMessageBasedOnType(String wholeMessageAsJSON) {
         try {
             System.out.println("Parsing message");
-            ParsedMessage parsedMessage  = EndDeviceMessageParser.getInstance().parseJSONData(wholeMessageAsJSON);
+            ParsedMessage parsedMessage  = parser.parseJSONData(wholeMessageAsJSON);
             if(parsedMessage.getHumidity() == -1){
                 return;
             }
@@ -165,9 +165,9 @@ public class OutboundManager extends Thread implements IMqttMessageListener, Mqt
             System.out.println("Saving measurements");
             saveMeasurement(parsedMessage);
         } catch (SQLException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(OutboundManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }

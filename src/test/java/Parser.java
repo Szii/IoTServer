@@ -2,7 +2,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irrigation.iotserver.Logic.EndDeviceMessageParser;
+import com.irrigation.iotserver.Configuration.EndDeviceMessageParser;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;

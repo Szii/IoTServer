@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Logic;
+package com.irrigation.iotserver.Configuration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,23 +16,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.stereotype.Component;
 
 /**
  * Singleton class used to parse JSON retrieved through MQTT
  * @author brune
  */
+
+@Component
 public class EndDeviceMessageParser {
-    
-    private static EndDeviceMessageParser parser;
-    
+     
     public  EndDeviceMessageParser(){}
     
-    public static EndDeviceMessageParser getInstance(){
-        if(parser == null){
-            parser = new EndDeviceMessageParser();
-        }
-        return parser;
-    }
+ 
     
     public ParsedMessage parseJSONData(String dataInJSON) throws JsonProcessingException{
 
