@@ -2,7 +2,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irrigation.iotserver.Configuration.EndDeviceMessageParser;
+import com.irrigation.iotserver.Services.EndDeviceMessageParserService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +39,7 @@ public class Parser {
             assertEquals(devEui,"AAAAAAAAAAAAAAAA");
   
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(EndDeviceMessageParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EndDeviceMessageParserService.class.getName()).log(Level.SEVERE, null, ex);
         }
      
     }

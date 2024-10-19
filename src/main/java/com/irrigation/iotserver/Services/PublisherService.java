@@ -65,7 +65,7 @@ public class PublisherService {
     private MqttMessage createMessage(String message){
        System.out.println("Started creating mqtt message");
         MqttMessage msg = new MqttMessage(getMessageInValidFormat(message).getBytes());
-        msg.setQos(0);
+        msg.setQos(1);
         System.out.println("created message: " + msg.toString());
         return msg;
     }

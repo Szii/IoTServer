@@ -8,7 +8,6 @@ package com.irrigation.iotserver.Services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.irrigation.iotserver.Configuration.LoraConfig;
 import com.irrigation.iotserver.Data.ParsedMessage;
-import com.irrigation.iotserver.Configuration.EndDeviceMessageParser;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,14 +36,14 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
 
     private final PublisherService pub;
     private final DataAccess databaseManager;
-    private final EndDeviceMessageParser parser;
+    private final EndDeviceMessageParserService parser;
     private final LoraConfig conf;
 
     private MqttClient client;
     
     
 
-    public LoraService(DataAccess databaseManager,LoraConfig conf,PublisherService pub,EndDeviceMessageParser parser){
+    public LoraService(DataAccess databaseManager,LoraConfig conf,PublisherService pub,EndDeviceMessageParserService parser){
         this.databaseManager = databaseManager;
         this.conf = conf;
         this.pub = pub;
@@ -58,15 +57,15 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     @PostConstruct
     public void postConstructor() {
         System.out.println("Outbound manager started");
-        this.start();  // Start the thread after the Spring context is initialized
+        this.start();  
     }
     
     private void init(){
         try {
             client = new MqttClient(
-                    "tcp://" + conf.address, //URI
-                    MqttClient.generateClientId(), //ClientId
-                    new MemoryPersistence()); //Persistence
+                    "tcp://" + conf.address, 
+                    MqttClient.generateClientId(), 
+                    new MemoryPersistence());
             connect();
             subscribeToTopics();
         } catch (MqttException ex) {
@@ -137,11 +136,7 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        try {
-            System.out.println("Message delivered: " + token.getMessage().toString());
-        } catch (MqttException ex) {
-            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }
     
     public void evaluateMessageBasedOnType(String wholeMessageAsJSON) {

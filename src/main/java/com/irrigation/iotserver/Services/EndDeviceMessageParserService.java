@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.irrigation.iotserver.Configuration;
+package com.irrigation.iotserver.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,15 +24,15 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class EndDeviceMessageParser {
+public class EndDeviceMessageParserService {
      
-    public  EndDeviceMessageParser(){}
+    public  EndDeviceMessageParserService(){}
     
  
     
     public ParsedMessage parseJSONData(String dataInJSON) throws JsonProcessingException{
 
-             System.out.println("Parsing start");
+            System.out.println("Parsing start");
             ObjectMapper objectMapper = new ObjectMapper();
             SimpleModule module = new SimpleModule();
             module.addDeserializer(ParsedMessage.class, new LoRaMessageDeserializer());
@@ -110,7 +110,7 @@ public class EndDeviceMessageParser {
             
             return devEui;
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(EndDeviceMessageParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EndDeviceMessageParserService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
       
@@ -130,7 +130,7 @@ public class EndDeviceMessageParser {
             
             return devEui;
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(EndDeviceMessageParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EndDeviceMessageParserService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
     }
