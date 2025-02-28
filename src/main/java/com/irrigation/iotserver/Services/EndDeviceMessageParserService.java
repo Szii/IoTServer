@@ -48,8 +48,7 @@ public class EndDeviceMessageParserService {
     
     public ParsedMessage parseJSON(String dataInJSON){
        ParsedMessage parsedMessage = new ParsedMessage("a",1,1);
-                // Create an ObjectMapper instance
-        ObjectMapper objectMapper = new ObjectMapper();
+       ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             JsonNode rootNode = objectMapper.readTree(dataInJSON);
@@ -76,13 +75,10 @@ public class EndDeviceMessageParserService {
         try {
 
             ObjectMapper objectMapper = new ObjectMapper();
-            // Parse the JSON payload
             JsonNode rootNode = objectMapper.readTree(dataInJSON);
 
-            // Extract the decoded payload bytes array
             JsonNode decodedPayloadBytes = rootNode.path("uplink_message").path("decoded_payload").path("bytes");
 
-            // Convert the byte array into a single integer value
             int decodedValue = 0;
             for (int i = 0; i < decodedPayloadBytes.size(); i++) {
                 decodedValue = decodedPayloadBytes.get(i).asInt();
@@ -101,10 +97,8 @@ public class EndDeviceMessageParserService {
             ObjectMapper objectMapper = new ObjectMapper();
             
             
-            // Parse the JSON payload
             JsonNode rootNode = objectMapper.readTree(dataInJSON);
 
-            // Extract the dev_eui field
             String devEui = rootNode.path("end_device_ids").path("dev_eui").asText();
             System.out.println("dev_eui: " + devEui);
             
@@ -121,10 +115,8 @@ public class EndDeviceMessageParserService {
             ObjectMapper objectMapper = new ObjectMapper();
             
             
-            // Parse the JSON payload
             JsonNode rootNode = objectMapper.readTree(dataInJSON);
 
-            // Extract the dev_eui field
             String devEui = rootNode.path("end_device_ids").path("dev_eui").asText();
             System.out.println("dev_eui: " + devEui);
             

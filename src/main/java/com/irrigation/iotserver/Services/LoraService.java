@@ -168,14 +168,14 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     }
     
     private void addDeviceIfNotExist(String deviceID) throws SQLException{
+        
         if(!databaseManager.checkIfDeviceExistsQuery(deviceID)){
             databaseManager.addDeviceQuery(deviceID);
         }
     }
     
     private void saveMeasurement(ParsedMessage data) throws SQLException{
-       //databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime());
-       
+       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()),"TYPE_HUMIDITY", getCurrentDateTime());  
     }
     
     private String getCurrentDateTime(){
