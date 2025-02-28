@@ -14,9 +14,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ParsedMessage {
     
-    int humidity = 0;
-    int temperature = 0;
-    String deviceID = "";
+    private int humidity = 0;
+    private int temperature = 0;
+    private String deviceID = "";
     
     @JsonCreator
     public ParsedMessage(@JsonProperty("deviceID") String deviceID, @JsonProperty("temperature") int temperature, @JsonProperty("humidity") int humidity) {
@@ -24,7 +24,7 @@ public class ParsedMessage {
         this.humidity = humidity;
         this.deviceID = deviceID;
     }
-
+    
     public int getHumidity() {
         return humidity;
     }

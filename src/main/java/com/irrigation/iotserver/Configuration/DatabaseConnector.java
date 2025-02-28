@@ -33,7 +33,6 @@ public class DatabaseConnector {
          System.out.println(conf.password);
          System.out.println(conf.address);
 
-        // Specify the connection URL, username, and password
           final String databaseURL = "jdbc:mysql://" +conf.address+ "/diplomova_prace_db?allowMultiQueries=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
           final String user = conf.username;
           final String password = conf.password;

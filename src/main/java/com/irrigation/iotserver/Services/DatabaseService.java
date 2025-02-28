@@ -309,7 +309,12 @@ public class DatabaseService implements DataAccess {
            PreparedStatement typePst = connection.prepareStatement(typeQuery);
            typePst.setString(1, typeName);
            ResultSet typeResult = typePst.executeQuery(); 
-           return typeResult.getInt("type_ID");
+           if(typeResult.next()){
+               return typeResult.getInt("type_ID");
+           }
+           else{
+                throw new SQLException("No type_ID found for type_name: " + typeName);
+           }
           }
                 
         @Override     

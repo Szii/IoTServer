@@ -7,6 +7,7 @@ package com.irrigation.iotserver.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.irrigation.iotserver.Configuration.LoraConfig;
+import com.irrigation.iotserver.Data.MeasurementType;
 import com.irrigation.iotserver.Data.ParsedMessage;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -143,13 +144,11 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
         try {
             System.out.println("Parsing message");
             ParsedMessage parsedMessage  = parser.parseJSONData(wholeMessageAsJSON);
-            if(parsedMessage.getHumidity() == -1){
-                return;
-            }
             System.out.println("checking if device exists");
             addDeviceIfNotExist(parsedMessage.getDeviceID());
             int storedThreshold = Integer.parseInt(databaseManager.getThresoldQuery(parsedMessage.getDeviceID()));
             int storedIrrigationTime = Integer.parseInt(databaseManager.getIrrigationTime(parsedMessage.getDeviceID()));
+            
             if(storedThreshold >=  parsedMessage.getHumidity() && storedIrrigationTime > 0){
                 System.out.println("Sending message");
                 sendMessage(parsedMessage.getDeviceID(),String.valueOf(storedIrrigationTime));
@@ -175,7 +174,14 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     }
     
     private void saveMeasurement(ParsedMessage data) throws SQLException{
-       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime(), "TYPE_HUMIDITY");  
+        if(data.getHumidity() != -1){
+                 System.out.println("Saving humidity " + data.getHumidity());
+                 databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime(), MeasurementType.TYPE_HUMIDITY.toString()); 
+        }
+        if(data.getTemperature()!= -1){
+                 System.out.println("Saving temperature " + data.getTemperature());
+                 databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getTemperature()), getCurrentDateTime(), MeasurementType.TYPE_TEMPERATURE.toString());  
+        }
     }
     
     private String getCurrentDateTime(){

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.irrigation.Messages.MessageFormat.LoRaMessageDeserializer;
+import com.irrigation.iotserver.Data.MeasurementType;
 import com.irrigation.iotserver.Data.ParsedMessage;
 import java.io.IOException;
 import java.util.HashSet;
@@ -70,62 +71,4 @@ public class EndDeviceMessageParserService {
         
         return parsedMessage;
     }
-    
-    public int getDataValue(String dataInJSON){
-        try {
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(dataInJSON);
-
-            JsonNode decodedPayloadBytes = rootNode.path("uplink_message").path("decoded_payload").path("bytes");
-
-            int decodedValue = 0;
-            for (int i = 0; i < decodedPayloadBytes.size(); i++) {
-                decodedValue = decodedPayloadBytes.get(i).asInt();
-            }
-
-            return decodedValue;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-    
-    public String getTypeOfData(String dataInJSON){
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            
-            
-            JsonNode rootNode = objectMapper.readTree(dataInJSON);
-
-            String devEui = rootNode.path("end_device_ids").path("dev_eui").asText();
-            System.out.println("dev_eui: " + devEui);
-            
-            return devEui;
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(EndDeviceMessageParserService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "";
-      
-    }
-    
-    public String getEndDeviceID(String dataInJSON){
-         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            
-            
-            JsonNode rootNode = objectMapper.readTree(dataInJSON);
-
-            String devEui = rootNode.path("end_device_ids").path("dev_eui").asText();
-            System.out.println("dev_eui: " + devEui);
-            
-            return devEui;
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(EndDeviceMessageParserService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "";
-    }
-
-    
 }
