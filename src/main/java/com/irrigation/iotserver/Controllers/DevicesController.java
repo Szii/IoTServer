@@ -13,6 +13,7 @@ import com.irrigation.iotserver.Services.ControllerHelperService;
 import com.irrigation.iotserver.Services.DataAccess;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class DevicesController {
        this.helperService = helperService;
     }
     
-      @GetMapping("/getAll")
+    @GetMapping("/getAll")
     public Payload getDevices(@RequestHeader("Authorization") String token) {
         try {
             String username = databaseManager.getTokenOwnerQuery(helperService.getToken(token));
@@ -127,7 +128,17 @@ public class DevicesController {
             if(deviceRequest.getDeviceNickname()!= null)
                 databaseManager.setSensorNickname(deviceRequest.getDevice(), deviceRequest.getDeviceNickname());   
             if(deviceRequest.getNewGroup() != null){
-                databaseManager.addDeviceToGroup(deviceRequest.getDevice(), databaseManager.getGroupID(username, deviceRequest.getNewGroup()));  
+                if (deviceRequest.getNewGroup() != null) {
+                    String newGroup = deviceRequest.getNewGroup();
+                    String groupID = databaseManager.getGroupID(username, newGroup); // Store the actual group ID
+                    System.out.println("New group ID: " + groupID);
+
+                    if (newGroup.isEmpty() || groupID.isEmpty()) { // Now checking the actual group ID
+                        databaseManager.removeDeviceFromGroupQuery(deviceRequest.getDevice());  
+                    } else {
+                        databaseManager.addDeviceToGroup(deviceRequest.getDevice(), groupID);  
+                    }
+                }
             }
             return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
         } catch (SQLException ex) {
@@ -155,16 +166,21 @@ public class DevicesController {
 
     }
        
-     private ArrayList<Device> getDevices(ArrayList<String> devices) throws SQLException{
+     private ArrayList<Device> getDevices(List<String> devices) throws SQLException{
            ArrayList<Device> devicesList = new ArrayList();
             for (String sensorID : devices){
-                ArrayList<String> humidityMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_HUMIDITY");
-                ArrayList<String> temperatureMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_TEMPERATURE");
+                List<String> humidityMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_HUMIDITY");
+                List<String> temperatureMeasurement = databaseManager.getLastMeasurementQuery(sensorID,"TYPE_TEMPERATURE");
+                int availiableGroupsSize = databaseManager.getDeviceGroupQuery(sensorID).size();
+                String deviceGroup = "Default";
+                if(availiableGroupsSize != 0){
+                    deviceGroup = databaseManager.getGroupNameQuery(databaseManager.getDeviceGroupQuery(sensorID).get(0));
+                }
                 Device device = new Device.DeviceBuilder()
                         .setID(sensorID)
                         .setNickname(databaseManager.getSensorNickname(sensorID))
                         .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
-                        .setGroup(databaseManager.getDeviceGroupQuery(sensorID).get(1))
+                        .setGroup(deviceGroup)
                         .setHumidityValue(humidityMeasurement.get(0))
                         .setThreshold(databaseManager.getThresoldQuery(sensorID))
                         .setHumidityDate(humidityMeasurement.get(1))

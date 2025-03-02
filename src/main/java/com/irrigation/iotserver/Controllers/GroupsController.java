@@ -89,6 +89,7 @@ public class GroupsController {
                 databaseManager.createGroupQuery(username,groupRequest.getGroup());     
                 return new Payload.PayloadBuilder().setCode(Code.SUCCESS).build();
             } catch (SQLException ex) {
+                System.out.println(ex);
                 return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
             }
 

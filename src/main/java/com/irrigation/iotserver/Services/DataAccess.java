@@ -10,7 +10,7 @@ package com.irrigation.iotserver.Services;
  * @author brune
  */
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of this interface contains logic behind managing the stored data
@@ -39,40 +39,6 @@ public interface DataAccess {
      */
     public boolean addUserQuery(String name,String password);
     /**
-     * Method add a username to unit ID, registering unit to the user
-     * @param unit_ID unit ID
-     * @param user username
-     */
-    public void registerUnitQuery(String unit_ID,String user);
-    /**
-     * Method returns registered units for user from data source
-     * @param user Username
-     * @return Registered units
-     * @throws java.sql.SQLException Exception is thrown when problem with query occurs
-     */
-    public ArrayList<String> getRegisteredUnitsQuery(String user) throws SQLException;
-    /**
-     * Method gets unit if it is found in the datasource
-     * @param name ID of unit
-     * @return unit if it is present in data source, else empty string
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public String getUnitQuery(String name) throws SQLException;
-    /**
-     * Method checks if unit is registered under any user
-     * @param unit_ID unit ID
-     * @return true if unit is registered
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public boolean checkIfUnitIsRegisteredQuery(String unit_ID) throws SQLException;
-    /**
-     * Method checks the data source if unit is present
-     * @param unit_ID ID of unit
-     * @return Returns true if unit is present
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public boolean checkUnitQuery(String unit_ID) throws SQLException;
-    /**
      * Method gets threshold for sensor from the data source
      * @param sensor_ID Id of sensor
      * @return threshold for sensor
@@ -87,12 +53,6 @@ public interface DataAccess {
      */
     public void setThresoldQuery(String sensor_ID,String thresold) throws SQLException;
     /**
-     * Method adds unit as new entry to the data source
-     * @param unit_ID ID of unit
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public void addUnitQuery(String unit_ID)throws SQLException;
-    /**
      * Method adds measured value of moisture as new entry into data source
      * @param sensor_ID ID of sensor
      * @param measure measured value
@@ -102,35 +62,13 @@ public interface DataAccess {
      */
     public void addMeasurementQuery(String sensor_ID,String measure,String date, String type)throws SQLException;
     /**
-     * Method unregister unit by modifing data source
-     * @param unit_ID ID of unit
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public void unregisterUnitQuery(String unit_ID)throws SQLException;
-    /**
      * Method gets last measured value for sensor from data source
      * @param sensor_ID sensor ID
      * @param type type of measurememt
      * @return last measured value
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public ArrayList<String> getLastMeasurementQuery(String sensor_ID,String type) throws SQLException;
-    /**
-     * Method checks the data source if sensor belongs to unit
-     * @param sensor_ID ID of sensor
-     * @param unit_ID ID of unit
-     * @return Returns true if sensor belongs to unit
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public boolean doesSensorBelongsToUnit(String sensor_ID,String unit_ID) throws SQLException;  
-    /**
-     * Method checks the data source if sensor is registered under any unit
-     * @param sensor_ID
-     * @param unit_ID
-     * @return Returns true if sensor is register under any unit
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public boolean isSensorHiddenFromUnit(String sensor_ID,String unit_ID) throws SQLException;  
+    public List<String> getLastMeasurementQuery(String sensor_ID,String type) throws SQLException;
     /**
      * Method register sensor under a unit by modifing data source
      * @param sensor_ID ID of sensor
@@ -145,7 +83,7 @@ public interface DataAccess {
      * @return Sensors registered under specific unit
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public ArrayList<String> getAvailableSensors(String username) throws SQLException;
+    public List<String> getAvailableSensors(String username) throws SQLException;
     /**
      * Method modifies the data source by removing sensor from under a user to which is registered
      * @param sensor_ID ID of sensor
@@ -161,26 +99,12 @@ public interface DataAccess {
      */
     public void setSensorNickname (String sensor_ID,String nickname) throws SQLException;  
     /**
-     * Methods modifies the data source by setting the nickname for unit
-     * @param unit_ID ID of unit
-     * @param nickname Nickname for unit
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public void setUnitNickname (String unit_ID,String nickname) throws SQLException;
-    /**
      * Methods checks the data source for nickname of sensor
      * @param sensor_ID Id of sensor
      * @return Nickname of sensor if its present, if not, returns ID of sensor
      * @throws SQLException Exception is thrown when problem with query occurs
      */
     public String getSensorNickname (String sensor_ID) throws SQLException; 
-   /**
-     * Methods checks the data source for nickname of unit
-     * @param unit_ID Id of unit
-     * @return Nickname of unit if its present, if not, returns ID of unit
-     * @throws SQLException Exception is thrown when problem with query occurs
-     */
-    public String getUnitNickname (String unit_ID) throws SQLException;
     /**
      * Method checks the data source for sensor owner
      * @param sensorID Id of sensor
@@ -195,7 +119,7 @@ public interface DataAccess {
      * @param type type of measurement 
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public ArrayList<String> getMeasurementDataQuery (String sensorID, String type) throws SQLException;
+    public List<String> getMeasurementDataQuery (String sensorID, String type) throws SQLException;
     /**
      * Method checks the data source for all measurements of sensor in time interval
      * @param sensorID ID of sensor
@@ -205,7 +129,7 @@ public interface DataAccess {
      * @return Measurements of sensor in time interval
      * @throws SQLException Exception is thrown when problem with query occurs
      */
-    public ArrayList<String> getMeasurementDataInRange (String sensorID,String from,String to, String type) throws SQLException;
+    public List<String> getMeasurementDataInRange (String sensorID,String from,String to, String type) throws SQLException;
     
     /**
      * Gets irrigation time for a sensor from data source
@@ -229,11 +153,11 @@ public interface DataAccess {
      * @return list containing ID and nickname of group
      * @throws SQLException 
      */
-    public ArrayList<String> getDeviceGroupQuery(String sensor_ID) throws SQLException;
+    public List<String> getDeviceGroupQuery(String sensor_ID) throws SQLException;
     
-    public ArrayList<String> getGroupsQuery(String username) throws SQLException;
+    public List<String> getGroupsQuery(String username) throws SQLException;
     
-    public ArrayList<String> getAllDevicesInGroupQuery(String group) throws SQLException;
+    public List<String> getAllDevicesInGroupQuery(String group) throws SQLException;
          
     public boolean addDeviceToGroup (String device_ID,String group) throws SQLException;
 
@@ -256,6 +180,8 @@ public interface DataAccess {
     public void addDeviceQuery(String deviceID)throws SQLException;
    
     public boolean checkIfDeviceExistsQuery(String deviceID) throws SQLException;
+    
+    public String getGroupNameQuery(String username) throws SQLException;
                  
 
 
