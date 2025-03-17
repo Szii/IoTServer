@@ -5,15 +5,18 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 
 /**
  *
  * @author brune
  */
+@Schema(name = "CredentialsRequest", description = "User credentials for login/registration")
 public class CredentialsRequest implements Serializable {
-    
+    @Schema(description = "The user’s unique name", example = "Franta")
     String username;
+    @Schema(description = "The user’s password (plaintext when sent over HTTPS, it is encoded afterwards)", example = "Lala")
     String password;
 
     public CredentialsRequest(String username, String password) {
