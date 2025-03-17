@@ -5,6 +5,8 @@
  */
 package com.irrigation.iotserver.Controllers;
 
+import com.irrigation.Messages.MessageData.Device;
+import com.irrigation.Messages.MessageData.Measurement;
 import com.irrigation.Messages.MessageFormat.Code;
 import com.irrigation.Messages.MessageFormat.MeasurementRequest;
 import com.irrigation.Messages.MessageFormat.Payload;
@@ -19,8 +21,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,24 +74,18 @@ public class MeasurementsController {
                         {
                           "code": "SUCCESS",
                           "content": [
-                            "30",
-                            "2024-09-15 16:40:29",
-                            "21",
-                            "2024-09-15 21:40:29",  
-                            "57",
-                            "2024-09-16 0:40:29",
-                            "49",
-                            "2024-09-16 05:40:29",
-                            "40",
-                            "2024-09-16 11:40:29",
-                            "29",
-                            "2024-09-16 16:40:29",
-                            "23",
-                            "2024-09-16 21:40:29",
-                            "59",
-                            "2024-09-17 0:40:29",
-                            "53",
-                            "2024-09-17 05:40:29"                      
+                            {
+                              "value": "30",
+                              "date": "2024-09-15 16:40:29"
+                            },
+                            {
+                              "value": "21",
+                              "date": "2024-09-15 21:40:29"
+                            },
+                            {
+                              "value": "57",
+                              "date": "2024-09-16 00:40:29"
+                            }
                           ]
                         }
                         """
@@ -135,12 +135,12 @@ public class MeasurementsController {
             String username = helperService.checkAuthorisation(token);
             if(measurementRequest.getDevice()!= null && measurementRequest.getTo() != null){
                     return new Payload.PayloadBuilder()
-                    .setContent(databaseManager.getMeasurementDataInRange(measurementRequest.getDevice(),measurementRequest.getFrom(),measurementRequest.getTo(),measurementRequest.getType()))
+                    .setMeasurements(getMeasurements(databaseManager.getMeasurementDataInRange(measurementRequest.getDevice(),measurementRequest.getFrom(),measurementRequest.getTo(),measurementRequest.getType())))
                     .setCode(Code.SUCCESS)
                     .build();
             }
             return new Payload.PayloadBuilder()
-                    .setContent(databaseManager.getMeasurementDataQuery(measurementRequest.getDevice(),measurementRequest.getType()))
+                    .setMeasurements(getMeasurements(databaseManager.getMeasurementDataQuery(measurementRequest.getDevice(),measurementRequest.getType())))
                     .setCode(Code.SUCCESS)
                     .build();
             
@@ -150,4 +150,14 @@ public class MeasurementsController {
         }
         
     }
+    
+    private ArrayList<Measurement> getMeasurements(List<String> measurements) throws SQLException {
+        return IntStream.range(0, measurements.size() / 2) 
+            .mapToObj(i -> new Measurement(
+                measurements.get(2 * i),      
+                measurements.get(2 * i + 1)  
+            ))
+            .collect(Collectors.toCollection(ArrayList::new));  
+    }
+    
 }

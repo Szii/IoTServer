@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.irrigation.Messages.MessageData.Device;
+import com.irrigation.Messages.MessageData.Measurement;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,19 +25,25 @@ import java.util.List;
 )
 @JsonDeserialize(builder = Payload.PayloadBuilder.class)
 public class Payload implements Serializable {
-
-    @JsonProperty("content")
+    
+    
+    @JsonProperty("measurements")
     @Schema(
-        description = "Array containg a content of response which do not inculde devices. Used for measurement data",
+        description = "Optional array containg measurements  if retrieved through measurements related endpoints"
+    )
+    private List<Measurement> measurements;
+
+    @JsonProperty("groups")
+    @Schema(
+        description = "Optional array containg groups  if retrieved through groups related endpoints",
         example = """
                   {
-                    30,
-                    25,
-                    21
+                    group1,
+                    group2
                   }
                   """
     )
-    private List<String> content;
+    private List<String> groups;
 
     @JsonProperty("type")
     @Schema(
@@ -59,11 +66,11 @@ public class Payload implements Serializable {
     )
     private String token;
 
-    @JsonProperty("data")
+    @JsonProperty("devices")
     @Schema(
         description = "Optional container for device objects if retrieved through device related endpoints."
     )
-    private ArrayList<Device> data;
+    private List<Device> devices;
 
     public String getToken() {
         return token;
@@ -76,19 +83,20 @@ public class Payload implements Serializable {
     public Payload(){}
 
     private Payload(PayloadBuilder builder) {
-        this.content = builder.content;
+        this.groups = builder.groups;
         this.type = builder.type;
         this.code = builder.code;
         this.token =builder.token;
-        this.data = builder.data;
+        this.devices = builder.devices;
+        this.measurements = builder.measurements;
     }
     
-    public List<String> getContent() {
-        return content;
+    public List<String> getGroups() {
+        return groups;
     }
 
-    public void setContent(List<String> content) {
-        this.content = content;
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
     }
 
     public MessageType getType() {
@@ -98,20 +106,26 @@ public class Payload implements Serializable {
     public Code getCode() {
         return code;
     }
+    
+    public List<Measurement> getMeasurements(){
+        return measurements;
+    }
 
     
-    public ArrayList<Device> getData(){
-        return data;
+    public List<Device> getDevices(){
+        return devices;
     }
     
     @JsonPOJOBuilder(withPrefix = "set")
     public static class PayloadBuilder{
-        private List<String> content;
+        private List<String> groups;
         private MessageType type;
         private Code code;
         private String token;
-        @JsonProperty("data")
-        private ArrayList<Device> data;
+        @JsonProperty("devices")
+        private List<Device> devices;
+        @JsonProperty("measurements")
+        private List<Measurement> measurements;
    
     
         public PayloadBuilder() {
@@ -131,8 +145,13 @@ public class Payload implements Serializable {
             return this;
         }
         
-        public PayloadBuilder setContent(List<String> content){
-            this.content = content;
+       public PayloadBuilder setMeasurements(List<Measurement> measurements){
+            this.measurements = measurements;
+            return this;
+       }
+        
+        public PayloadBuilder setGroups(List<String> groups){
+            this.groups = groups;
             return this;
         }
         public PayloadBuilder setType(MessageType type){
@@ -140,8 +159,8 @@ public class Payload implements Serializable {
             return this;
         }
         
-        public PayloadBuilder setData(ArrayList<Device> data){
-            this.data = data;
+        public PayloadBuilder setDevices(ArrayList<Device> devices){
+            this.devices = devices;
             return this;
         }
         

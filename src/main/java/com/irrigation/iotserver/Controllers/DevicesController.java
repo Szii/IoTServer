@@ -114,7 +114,7 @@ public class DevicesController {
             String username = databaseManager.getTokenOwnerQuery(helperService.getToken(token));
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
-                    .setData(this.getAvailableDevicesBasedOnUsername(username))
+                    .setDevices(this.getAvailableDevicesBasedOnUsername(username))
                     .build();
         } catch (SQLException ex) {
             Logger.getLogger(DevicesController.class.getName()).log(Level.SEVERE, null, ex);
@@ -190,7 +190,7 @@ public class DevicesController {
             String groupID = databaseManager.getGroupID(username, groupName);
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
-                    .setData(this.getAvailableDevicesBasedOnGroup(groupID))
+                    .setDevices(this.getAvailableDevicesBasedOnGroup(groupID))
                     .build();
         } catch (SQLException ex) {
             Logger.getLogger(DevicesController.class.getName()).log(Level.SEVERE, null, ex);

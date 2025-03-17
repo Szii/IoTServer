@@ -121,7 +121,7 @@ public class GroupsController {
             String username = helperService.checkAuthorisation(token);
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
-                    .setContent(databaseManager.getGroupsQuery(username))
+                    .setGroups(databaseManager.getGroupsQuery(username))
                     .build();
         } catch (SQLException ex) {
             return new Payload.PayloadBuilder().setCode(Code.FAILURE).build();
