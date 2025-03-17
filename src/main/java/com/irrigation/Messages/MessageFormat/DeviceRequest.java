@@ -5,19 +5,47 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 
 /**
  *
  * @author brune
  */
-public class DeviceRequest implements Serializable{
-    
-    String device;
-    String irrigationTime;
-    String treshold;
-    String deviceNickname;
-    String newGroup;
+@Schema(name = "DeviceRequest", description = "Payload for device-related operations.")
+public class DeviceRequest implements Serializable {
+
+    @Schema(
+        description = "Unique device identifier.",
+        example = "otaatest"
+    )
+    private String device;
+
+    @Schema(
+        description = "Irrigation time setting for this device in seconds. Zero value makes device do not water at all",
+        format = "Integer",
+        example = "3"
+    )
+    private String irrigationTime;
+
+    @Schema(
+        description = "Moisture threshold setting",
+        format = "Integer",
+        example = "30"
+    )
+    private String treshold;
+
+    @Schema(
+        description = "Human-friendly nickname for the device.",
+        example = "Macešky_1"
+    )
+    private String deviceNickname;
+
+    @Schema(
+        description = "If set, moves the device to the specified group or removes it from any group if empty.",
+        example = "Sklenik_venku"
+    )
+    private String newGroup;
 
     public DeviceRequest(String device, String irrigationTime, String treshold, String deviceNickname) {
         this.device = device;

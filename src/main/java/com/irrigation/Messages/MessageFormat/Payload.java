@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.irrigation.Messages.MessageData.Device;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +18,52 @@ import java.util.List;
  *
  * @author brune
  */
+@Schema(
+    name = "Payload",
+    description = "Main wrapper for response"
+)
 @JsonDeserialize(builder = Payload.PayloadBuilder.class)
 public class Payload implements Serializable {
+
     @JsonProperty("content")
-    List<String> content;
+    @Schema(
+        description = "Array containg a content of response which do not inculde devices. Used for measurement data",
+        example = """
+                  {
+                    30,
+                    25,
+                    21
+                  }
+                  """
+    )
+    private List<String> content;
+
     @JsonProperty("type")
-    MessageType type;
+    @Schema(
+        description = "Message type indicating type of operation",
+        example = "CONFIRM_LOGIN"
+    )
+    private MessageType type;
+
     @JsonProperty("code")
-    Code code;
+    @Schema(
+        description = "Indicates success or failure of the operation. Can hold value of SUCCESS or FAILURE.",
+        example = "SUCCESS"
+    )
+    private Code code;
+
     @JsonProperty("token")
-    String token;
+    @Schema(
+        description = "Auth token returned when logging sucessfully",
+        example = "auth-token-example"
+    )
+    private String token;
+
     @JsonProperty("data")
-    ArrayList<Device> data;
+    @Schema(
+        description = "Optional container for device objects if retrieved through device related endpoints."
+    )
+    private ArrayList<Device> data;
 
     public String getToken() {
         return token;
@@ -65,7 +100,7 @@ public class Payload implements Serializable {
     }
 
     
-    public ArrayList<Device> getObject(){
+    public ArrayList<Device> getData(){
         return data;
     }
     
@@ -105,7 +140,7 @@ public class Payload implements Serializable {
             return this;
         }
         
-        public PayloadBuilder setObject(ArrayList<Device> data){
+        public PayloadBuilder setData(ArrayList<Device> data){
             this.data = data;
             return this;
         }
