@@ -4,12 +4,17 @@
  */
 package com.irrigation.Messages.MessageData;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  *
  * @author brune
  */
+@Schema(name = "Measurement", description = "Single measurement representet by value and date")
 public class Measurement {
+    @Schema(description = "Measured value", example = "30")
     private String value;
+    @Schema(description = "When was measurement saved", example = "2025-01-01 10:15:30")
     private String date;
     
     public Measurement(){}
