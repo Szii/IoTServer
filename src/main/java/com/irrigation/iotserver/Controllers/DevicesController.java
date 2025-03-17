@@ -450,6 +450,7 @@ public class DevicesController {
     }
 
     private ArrayList<Device> getDevices(List<String> devices) throws SQLException {
+        System.out.println(devices);
         ArrayList<Device> devicesList = new ArrayList<>();
         for (String sensorID : devices) {
             List<String> humidityMeasurement = databaseManager.getLastMeasurementQuery(sensorID, "TYPE_HUMIDITY");
@@ -464,7 +465,7 @@ public class DevicesController {
             }
 
             Device device = new Device.DeviceBuilder()
-                .setID(sensorID)
+                .setDeviceID(sensorID)
                 .setNickname(databaseManager.getSensorNickname(sensorID))
                 .setIrrigationTime(databaseManager.getIrrigationTime(sensorID))
                 .setGroup(deviceGroup)
