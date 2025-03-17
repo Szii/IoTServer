@@ -78,7 +78,7 @@ public class EvaluatingMessagesTest {
     }
     
     private void saveMeasurement(ParsedMessage data) throws SQLException{
-       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime(),"");
+       databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime(), "TYPE_HUMIDITY");
     }
     
     private String getCurrentDateTime(){

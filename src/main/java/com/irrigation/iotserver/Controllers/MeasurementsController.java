@@ -49,7 +49,7 @@ public class MeasurementsController {
     @Operation(
         summary = "Retrieve measurement data for a device",
         description = """
-            Returns measurement data for the specified device. 
+            Returns measurement data for the specified device together with dates of measurements
             If 'from' and 'to' query params are provided, it returns data in that time range. 
             Otherwise, it returns all measurement of provided type
             """
@@ -69,23 +69,23 @@ public class MeasurementsController {
                           "code": "SUCCESS",
                           "content": [
                             "30",
-                            "27",
+                            "2024-09-15 16:40:29",
                             "21",
-                            "62",  
+                            "2024-09-15 21:40:29",  
                             "57",
-                            "52",
+                            "2024-09-16 0:40:29",
                             "49",
-                            "46",
+                            "2024-09-16 05:40:29",
                             "40",
-                            "34",
+                            "2024-09-16 11:40:29",
                             "29",
-                            "27",
+                            "2024-09-16 16:40:29",
                             "23",
-                            "20",
+                            "2024-09-16 21:40:29",
                             "59",
-                            "56",
+                            "2024-09-17 0:40:29",
                             "53",
-                            "50"                      
+                            "2024-09-17 05:40:29"                      
                           ]
                         }
                         """
