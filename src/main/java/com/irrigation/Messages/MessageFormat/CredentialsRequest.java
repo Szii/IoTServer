@@ -39,7 +39,4 @@ public class CredentialsRequest implements Serializable {
         this.password = password;
     }
     
-    
-
-    
 }
