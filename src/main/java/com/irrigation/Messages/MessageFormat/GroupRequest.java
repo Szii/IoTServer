@@ -5,28 +5,45 @@
  */
 package com.irrigation.Messages.MessageFormat;
 
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 
 /**
  *
  * @author brune
  */
+
+@Schema(
+    name = "GroupRequest", 
+    description = "Payload for group-related operations."
+)
 public class GroupRequest implements Serializable {
-    
-    String group;
-    String  groupNewName;
-    
+
+    @Schema(
+        description = "Name of the group existing or new",
+        example = "Sklenik_venek"
+    )
+    private String group;
+
+    @Schema(
+        description = "New name to rename the group - used when renaming.",
+        example = "Sklenik_venek_maly",
+        nullable = true
+    )
+    private String groupNewName;
+
     public GroupRequest() {}
 
     public GroupRequest(String group) {
         this.group = group;
     }
-    
+
     public GroupRequest(String group, String groupNewName) {
         this.group = group;
         this.groupNewName = groupNewName;
     }
-    
+
     public String getGroup() {
         return group;
     }
@@ -42,7 +59,4 @@ public class GroupRequest implements Serializable {
     public void setGroupNewName(String groupNewName) {
         this.groupNewName = groupNewName;
     }
-    
-    
-    
 }
