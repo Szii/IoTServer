@@ -183,11 +183,12 @@ public class DevicesController {
         @Parameter(description = "Authorization token", required = true)
         @RequestHeader("Authorization") String token,
         @Parameter(description = "Name of the group to retrieve devices from", required = true)
-        @RequestParam("Group name") String groupName
+        @RequestParam("groupName") String groupName
     ) {
         try {
             String username = databaseManager.getTokenOwnerQuery(helperService.getToken(token));
             String groupID = databaseManager.getGroupID(username, groupName);
+            System.out.println("groupname: " + groupName + " groupID: " + groupID);
             return new Payload.PayloadBuilder()
                     .setCode(Code.SUCCESS)
                     .setDevices(this.getAvailableDevicesBasedOnGroup(groupID))
