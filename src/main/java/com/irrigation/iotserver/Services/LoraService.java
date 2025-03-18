@@ -111,7 +111,7 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     }
     
     public void sendMessage(String device,String message){      
-       pub.sentMessageToDevice(device,message);
+       pub.sendMessageToDevice(device,message);
 
     }
 
@@ -142,29 +142,36 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     public void evaluateMessageBasedOnType(String wholeMessageAsJSON) {
         try {
             System.out.println("Parsing message");
-            ParsedMessage parsedMessage  = parser.parseJSONData(wholeMessageAsJSON);
-            System.out.println("checking if device exists");
+            ParsedMessage parsedMessage = parser.parseJSONData(wholeMessageAsJSON);
+
+            System.out.println("Checking if device exists");
             addDeviceIfNotExist(parsedMessage.getDeviceID());
-            int storedThreshold = Integer.parseInt(databaseManager.getThresoldQuery(parsedMessage.getDeviceID()));
-            int storedIrrigationTime = Integer.parseInt(databaseManager.getIrrigationTime(parsedMessage.getDeviceID()));
-            
-            if(storedThreshold >=  parsedMessage.getHumidity() && storedIrrigationTime > 0){
-                System.out.println("Sending message");
-                sendMessage(parsedMessage.getDeviceID(),String.valueOf(storedIrrigationTime));
-            }
-            else{
-               sendMessage(parsedMessage.getDeviceID(),String.valueOf(0)); 
-            }
+
+            int storedThreshold = getStoredThreshold(parsedMessage.getDeviceID());
+            int storedIrrigationTime = getStoredIrrigationTime(parsedMessage.getDeviceID());
+
+            boolean shouldIrrigate = storedThreshold >= parsedMessage.getHumidity() && storedIrrigationTime > 0;
+            String irrigationMessage = shouldIrrigate ? String.valueOf(storedIrrigationTime) : "0";
+
+            System.out.println("Sending message");
+            sendMessage(parsedMessage.getDeviceID(), irrigationMessage);
+
             System.out.println("Saving measurements");
             saveMeasurement(parsedMessage);
-        } catch (SQLException ex) {
-            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (SQLException | JsonProcessingException ex) {
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, "Error processing message", ex);
         }
-        
     }
-    
+
+    private int getStoredThreshold(String deviceId) throws SQLException {
+        return Integer.parseInt(databaseManager.getThresoldQuery(deviceId));
+    }
+
+    private int getStoredIrrigationTime(String deviceId) throws SQLException {
+        return Integer.parseInt(databaseManager.getIrrigationTime(deviceId));
+    }
+
     private void addDeviceIfNotExist(String deviceID) throws SQLException{
         
         if(!databaseManager.checkIfDeviceExistsQuery(deviceID)){

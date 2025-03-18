@@ -13,11 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
  */
 public class PasswordHasher {
     
-    /**
-     * One-way hash function to hash a password
-     * @param password
-     * @return hashed password
-     */
     public static String getHash(String password){
          return BCrypt.hashpw(password, BCrypt.gensalt());
     }

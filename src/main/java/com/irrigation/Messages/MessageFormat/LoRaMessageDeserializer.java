@@ -30,15 +30,21 @@ public class LoRaMessageDeserializer extends StdDeserializer<ParsedMessage> {
 
     @Override
     public ParsedMessage deserialize(JsonParser jp, DeserializationContext ctxt)
-         throws IOException, JsonProcessingException {
-         JsonNode node = jp.getCodec().readTree(jp);
-         String deviceId = node.path("end_device_ids").path("device_id").asText();
-         JsonNode decodedPayloadNode = node.path("uplink_message").path("decoded_payload");
-        System.out.println("deserializing message, expecting two numbers and one string");
+            throws IOException {
+        JsonNode node = jp.getCodec().readTree(jp);
+
+        String deviceId = node.at("/end_device_ids/device_id").asText();
+        JsonNode decodedPayloadNode = node.at("/uplink_message/decoded_payload");
+
+        System.out.println("Deserializing message, expecting two numbers and one string");
+
         int temperature = decodedPayloadNode.path("Temperature").asInt();  
         int humidity = decodedPayloadNode.path("Humidity").asInt();
-        String type = decodedPayloadNode.path("Type").toString();
-        System.out.println("Deserialzation complete, got: " + temperature + " " + humidity + " " + type);
+        String type = decodedPayloadNode.path("Type").asText();
+
+        System.out.printf("Deserialization complete, got: %d %d %s%n", temperature, humidity, type);
+
         return new ParsedMessage(deviceId, temperature, humidity);
     }
+
 }

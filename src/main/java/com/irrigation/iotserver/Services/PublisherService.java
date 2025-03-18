@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,63 +23,66 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PublisherService {
-    
-    MqttClient client;
-    String MESSAGE_PRESET = "{\"downlinks\":[{\"f_port\": 15,\"frm_payload\":\"vu8=\",\"priority\": \"NORMAL\"}]}";
-    
-    public PublisherService(){
-        
+
+    private static final Logger LOGGER = Logger.getLogger(PublisherService.class.getName());
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonNode MESSAGE_TEMPLATE;
+
+    private MqttClient client;
+
+    static {
+        try {
+            MESSAGE_TEMPLATE = OBJECT_MAPPER.readTree(
+                "{\"downlinks\":[{\"f_port\": 15, \"frm_payload\": \"\", \"priority\": \"NORMAL\"}]}"
+            );
+        } catch (JsonProcessingException e) {
+            throw new ExceptionInInitializerError("Failed to parse message template: " + e.getMessage());
+        }
     }
 
-    public MqttClient getClient() {
-        return client;
-    }
+    public PublisherService() {}
 
     public void setClient(MqttClient client) {
         this.client = client;
     }
-    
-    private String getMessageInValidFormat(String dataToSent){
+
+    private String prepareMessage(String payload) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(MESSAGE_PRESET);
-            JsonNode downlinkNode = rootNode.path("downlinks").get(0); 
-            ((ObjectNode) downlinkNode).put("frm_payload", convertToBase64(dataToSent)); 
-            return  objectMapper.writeValueAsString(rootNode);
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(PublisherService.class.getName()).log(Level.SEVERE, null, ex);
-            return  "";
+            JsonNode messageNode = MESSAGE_TEMPLATE.deepCopy();
+            ((ObjectNode) messageNode.path("downlinks").get(0))
+                .put("frm_payload", Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8)));
+
+            return OBJECT_MAPPER.writeValueAsString(messageNode);
+        } catch (JsonProcessingException e) {
+            LOGGER.log(Level.SEVERE, "Error creating message JSON", e);
+            return "";
         }
     }
-    
-    private String convertToBase64(String undecodedData){
-        String encodedString = Base64.getEncoder().encodeToString(undecodedData.getBytes());
-        System.out.println("Original string: " + undecodedData);
-        System.out.println("Base64-encoded string: " + encodedString);
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
-        String decodedValue = new String(decodedBytes);
-        System.out.println("Decoded value: " + decodedValue);
-        return encodedString;
+
+    private MqttMessage createMqttMessage(String payload) {
+        LOGGER.info("Creating MQTT message");
+        String formattedMessage = prepareMessage(payload);
+        MqttMessage mqttMessage = new MqttMessage(formattedMessage.getBytes(StandardCharsets.UTF_8));
+        mqttMessage.setQos(1);
+        LOGGER.info("Created message: " + formattedMessage);
+        return mqttMessage;
     }
-    
-    private MqttMessage createMessage(String message){
-       System.out.println("Started creating mqtt message");
-        MqttMessage msg = new MqttMessage(getMessageInValidFormat(message).getBytes());
-        msg.setQos(1);
-        System.out.println("created message: " + msg.toString());
-        return msg;
-    }
-    
-    public void sentMessageToDevice(String deviceID,String message){
+
+    public void sendMessageToDevice(String deviceID, String payload) {
+        if (client == null) {
+            LOGGER.severe("MQTT client is not initialized!");
+            return;
+        }
+
         try {
-            System.out.println("Started sending mqtt message for device " + deviceID);
-            System.out.println("Mqtt client: " + client.getCurrentServerURI() + " " + client.getClientId());
-            client.publish("v3/user-app@jcudp/devices/"+deviceID+"/down/push", createMessage(message));
-            System.out.println("message " + message + " sent");
-        } catch (Exception ex) {
-            Logger.getLogger(PublisherService.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.info("Sending MQTT message to device: " + deviceID);
+            LOGGER.info("MQTT client: " + client.getCurrentServerURI() + " " + client.getClientId());
+
+            client.publish("v3/user-app@jcudp/devices/" + deviceID + "/down/push", createMqttMessage(payload));
+
+            LOGGER.info("Message sent successfully to device " + deviceID);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to send MQTT message", e);
         }
     }
-    
- 
 }

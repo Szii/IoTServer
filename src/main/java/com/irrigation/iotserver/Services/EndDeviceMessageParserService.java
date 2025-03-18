@@ -26,49 +26,46 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EndDeviceMessageParserService {
-     
-    public  EndDeviceMessageParserService(){}
-    
- 
-    
-    public ParsedMessage parseJSONData(String dataInJSON) throws JsonProcessingException{
 
-            System.out.println("Parsing start");
-            ObjectMapper objectMapper = new ObjectMapper();
-            SimpleModule module = new SimpleModule();
-            module.addDeserializer(ParsedMessage.class, new LoRaMessageDeserializer());
-            objectMapper.registerModule(module);
-            System.out.println("Parsing read");
-            ParsedMessage measurement = objectMapper.readValue(dataInJSON, ParsedMessage.class);
-             System.out.println("Parsing end");
-            System.out.println("parsed humidity: " + measurement.getHumidity());
-            System.out.println("parsed temperature: " + measurement.getTemperature());
-            System.out.println("parsed id: " + measurement.getDeviceID());
-            return measurement;
+    private final ObjectMapper objectMapper;
+
+    public EndDeviceMessageParserService() {
+        this.objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(ParsedMessage.class, new LoRaMessageDeserializer());
+        objectMapper.registerModule(module);
     }
-    
-    public ParsedMessage parseJSON(String dataInJSON){
-       ParsedMessage parsedMessage = new ParsedMessage("a",1,1);
-       ObjectMapper objectMapper = new ObjectMapper();
 
+    public ParsedMessage parseJSONData(String dataInJSON) throws JsonProcessingException {
+        System.out.println("Parsing start");
+
+        ParsedMessage measurement = objectMapper.readValue(dataInJSON, ParsedMessage.class);
+
+        System.out.printf("Parsed data - ID: %s, Humidity: %d, Temperature: %d%n",
+                measurement.getDeviceID(), measurement.getHumidity(), measurement.getTemperature());
+
+        return measurement;
+    }
+
+    public ParsedMessage parseJSON(String dataInJSON) {
         try {
             JsonNode rootNode = objectMapper.readTree(dataInJSON);
-            String devEui = rootNode.path("end_device_ids").path("device_id").asText();
-            System.out.println("parsed devui: " + devEui);
-            parsedMessage.setDeviceID(devEui);
-            JsonNode payload = rootNode.path("uplink_message").path("decoded_payload").path("bytes");
-            parsedMessage.setHumidity(payload.get(0).asInt());
-            parsedMessage.setTemperature(payload.get(01).asInt());
-            System.out.println("parsed humidity: " + parsedMessage.getHumidity());
-            System.out.println("parsed temperature: " + parsedMessage.getTemperature());
-            return parsedMessage;
-            
 
+            String deviceId = rootNode.at("/end_device_ids/device_id").asText();
+            JsonNode payload = rootNode.at("/uplink_message/decoded_payload/bytes");
+
+            int humidity = payload.get(0).asInt();
+            int temperature = payload.get(1).asInt();
+
+            ParsedMessage parsedMessage = new ParsedMessage(deviceId, temperature, humidity);
+
+            System.out.printf("Parsed data - ID: %s, Humidity: %d, Temperature: %d%n",
+                    parsedMessage.getDeviceID(), parsedMessage.getHumidity(), parsedMessage.getTemperature());
+
+            return parsedMessage;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error parsing JSON: " + e.getMessage());
+            return null; 
         }
-        
-        
-        return parsedMessage;
     }
 }
