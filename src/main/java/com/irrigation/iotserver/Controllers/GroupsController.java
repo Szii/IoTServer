@@ -149,7 +149,7 @@ public class GroupsController {
                         """
                     ),
                     @ExampleObject(
-                        name = "Rename failure - group do not exist or auth token is wrong",
+                        name = "Rename failure - group do not exist, new name is same as other name of already registered group or auth token is wrong",
                         value = """
                         {
                           "code": "FAILURE"

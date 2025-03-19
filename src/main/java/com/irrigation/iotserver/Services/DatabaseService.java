@@ -236,6 +236,7 @@ public class DatabaseService implements DataAccess {
     @Override
     public boolean removeGroupQuery(String username, String group_name) throws SQLException {
         String group_ID = getGroupID(username, group_name);
+        executeUpdate("UPDATE devices SET group_ID = NULL WHERE group_ID = ?", group_ID);
         return executeUpdate("DELETE FROM `groups`  WHERE group_ID = ?", group_ID);
     }
 
