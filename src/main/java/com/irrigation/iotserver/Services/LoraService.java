@@ -34,6 +34,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoraService extends Thread implements IMqttMessageListener, MqttCallback  {
     
+    private final static int PERCENTAGE_MIN = 0;
+    private final static int PERCENTAGE_MAX = 100;
+    
+    private final static int TEMPERATURE_MIN = -50;
+    private final static int TEMPERATURE_MAX = 150;
+    
 
     private final PublisherService pub;
     private final DataAccess databaseManager;
@@ -192,11 +198,11 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     }
     
     private void saveMeasurement(ParsedMessage data) throws SQLException{
-        if(data.getHumidity() != -1){
+        if(data.getHumidity() <= PERCENTAGE_MAX && data.getHumidity() <= PERCENTAGE_MIN){
                  System.out.println("Saving humidity " + data.getHumidity());
                  databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime(), MeasurementType.TYPE_HUMIDITY.toString()); 
         }
-        if(data.getTemperature()!= -1){
+        if(data.getHumidity() <= TEMPERATURE_MIN && data.getHumidity() <= TEMPERATURE_MAX){
                  System.out.println("Saving temperature " + data.getTemperature());
                  databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getTemperature()), getCurrentDateTime(), MeasurementType.TYPE_TEMPERATURE.toString());  
         }
