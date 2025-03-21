@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.irrigation.Exceptions.MissingJSONContentException;
 import com.irrigation.Messages.MessageFormat.LoRaMessageDeserializer;
 import com.irrigation.iotserver.Data.MeasurementType;
 import com.irrigation.iotserver.Data.ParsedMessage;
@@ -36,9 +37,16 @@ public class EndDeviceMessageParserService {
         objectMapper.registerModule(module);
     }
 
-    public ParsedMessage parseJSONData(String dataInJSON) throws JsonProcessingException {
+    public ParsedMessage parseJSONData(String dataInJSON) throws JsonProcessingException, MissingJSONContentException {
         System.out.println("Parsing start");
+        JsonNode rootNode = objectMapper.readTree(dataInJSON);
 
+        JsonNode uplinkMessage = rootNode.at("/uplink_message");
+
+        if (!uplinkMessage.has("frm_payload") || !uplinkMessage.has("decoded_payload")) {
+            throw new MissingJSONContentException("Missing required fields: 'frm_payload' or 'decoded_payload'");
+        }
+            
         ParsedMessage measurement = objectMapper.readValue(dataInJSON, ParsedMessage.class);
 
         System.out.printf("Parsed data - ID: %s, Humidity: %d, Temperature: %d%n",
@@ -47,10 +55,16 @@ public class EndDeviceMessageParserService {
         return measurement;
     }
 
-    public ParsedMessage parseJSON(String dataInJSON) {
+    public ParsedMessage parseJSON(String dataInJSON) throws MissingJSONContentException {
         try {
             JsonNode rootNode = objectMapper.readTree(dataInJSON);
 
+            JsonNode uplinkMessage = rootNode.at("/uplink_message");
+
+            if (!uplinkMessage.has("frm_payload") || !uplinkMessage.has("decoded_payload")) {
+                throw new MissingJSONContentException("Missing required fields: 'frm_payload' or 'decoded_payload'");
+            }
+            
             String deviceId = rootNode.at("/end_device_ids/device_id").asText();
             JsonNode payload = rootNode.at("/uplink_message/decoded_payload/bytes");
 

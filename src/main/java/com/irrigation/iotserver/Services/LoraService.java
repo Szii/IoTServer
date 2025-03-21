@@ -6,6 +6,7 @@
 package com.irrigation.iotserver.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.irrigation.Exceptions.MissingJSONContentException;
 import com.irrigation.iotserver.Configuration.LoraConfig;
 import com.irrigation.iotserver.Data.MeasurementType;
 import com.irrigation.iotserver.Data.ParsedMessage;
@@ -140,6 +141,7 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     }
     
     public void evaluateMessageBasedOnType(String wholeMessageAsJSON) {
+
         try {
             System.out.println("Parsing message");
             ParsedMessage parsedMessage = parser.parseJSONData(wholeMessageAsJSON);
@@ -152,16 +154,26 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
 
             boolean shouldIrrigate = storedThreshold >= parsedMessage.getHumidity() && storedIrrigationTime > 0;
             String irrigationMessage = shouldIrrigate ? String.valueOf(storedIrrigationTime) : "0";
-
-            System.out.println("Sending message");
-            sendMessage(parsedMessage.getDeviceID(), irrigationMessage);
-
+            if(!irrigationMessage.equals("0")){
+                System.out.println("Sending message. Got: " + parsedMessage.getHumidity() + " and threshold is: " + storedThreshold);
+                sendMessage(parsedMessage.getDeviceID(), irrigationMessage); 
+            }
+            else{
+                System.out.println("Do not sending message. Got: " + parsedMessage.getHumidity() + " and threshold is: " + storedThreshold);
+            }
+            
+            
             System.out.println("Saving measurements");
             saveMeasurement(parsedMessage);
-
-        } catch (SQLException | JsonProcessingException ex) {
-            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, "Error processing message", ex);
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MissingJSONContentException ex) {
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+
     }
 
     private int getStoredThreshold(String deviceId) throws SQLException {
