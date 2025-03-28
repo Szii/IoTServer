@@ -236,7 +236,7 @@ public class DatabaseService implements DataAccess {
     @Override
     public boolean removeGroupQuery(String username, String group_name) throws SQLException {
         String group_ID = getGroupID(username, group_name);
-        executeUpdate("UPDATE devices SET group_ID = NULL WHERE group_ID = ?", group_ID);
+        removeDeviceFromGroupQuery(group_ID);
         return executeUpdate("DELETE FROM `groups`  WHERE group_ID = ?", group_ID);
     }
 
@@ -277,6 +277,7 @@ public class DatabaseService implements DataAccess {
     @Override
     public boolean addDeviceToGroup(String device_ID, String group) throws SQLException {
         System.out.println("Adding device to group :" +  group);
+
         return executeUpdate("UPDATE devices SET group_ID = ? WHERE device_ID = ?", group, device_ID);
     }
 
@@ -306,11 +307,16 @@ public class DatabaseService implements DataAccess {
 
     @Override
     public void unregisterDeviceQuery(String sensor_ID, String username) throws SQLException {
+        executeUpdate("UPDATE devices SET group_ID = NULL WHERE device_ID = ?", sensor_ID);
+        executeUpdate("UPDATE devices SET device_name = NULL WHERE device_ID = ?", sensor_ID);
         executeUpdate("DELETE FROM user_device WHERE device = ? AND user = ?", sensor_ID, username);
     }
 
     @Override
     public void setSensorNickname(String sensor_ID, String nickname) throws SQLException {
+        if(nickname.isBlank()){
+             executeUpdate("UPDATE devices SET device_name = NULL WHERE device_ID = ?", sensor_ID);
+        }
         executeUpdate("UPDATE devices SET device_name = ? WHERE device_ID = ?", nickname, sensor_ID);
     }
 
