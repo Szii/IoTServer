@@ -253,7 +253,7 @@ public class DevicesController {
 
     @Operation(
         summary = "Unregister an existing device",
-        description = "Removes the association between a device and the authenticated user."
+        description = "Removes the association between a device and the authenticated user. Body needs only deviceID to be specified"
     )
     @ApiResponses(value = {
         @ApiResponse(
