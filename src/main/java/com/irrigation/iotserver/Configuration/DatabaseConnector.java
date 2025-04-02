@@ -7,8 +7,8 @@ package com.irrigation.iotserver.Configuration;
 
 import com.irrigation.iotserver.Configuration.DatabaseConfig;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -37,8 +37,33 @@ public class DatabaseConnector {
           final String user = conf.username;
           final String password = conf.password;
 
-         return DriverManager.getConnection(databaseURL, user, password);
+         return DatabasePool.getConnection(databaseURL, user, password);
     }
     
     
+    public class DatabasePool {
+        private static BasicDataSource dataSource;
+
+        public static Connection getConnection(String url, String user, String password) throws SQLException {
+            configure(url, user, password);
+            return dataSource.getConnection();
+        }
+        
+        public static void configure(String url, String user, String password){
+            dataSource = new BasicDataSource();
+            dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            dataSource.setUrl(url);
+            dataSource.setUsername(user);
+            dataSource.setPassword(password);
+
+            dataSource.setMinIdle(5);
+            dataSource.setMaxIdle(10);
+            dataSource.setMaxOpenPreparedStatements(100);
+
+            // Validation query
+            dataSource.setValidationQuery("SELECT 1");
+            dataSource.setTestOnBorrow(true);
+        }
+    
+    } 
 }

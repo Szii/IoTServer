@@ -11,13 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.irrigation.Exceptions.MissingJSONContentException;
 import com.irrigation.Messages.MessageFormat.LoRaMessageDeserializer;
-import com.irrigation.iotserver.Data.MeasurementType;
 import com.irrigation.iotserver.Data.ParsedMessage;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.stereotype.Component;
 
 /**

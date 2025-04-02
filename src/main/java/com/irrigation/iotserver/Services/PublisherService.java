@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class PublisherService {
 
-    private static final Logger LOGGER = Logger.getLogger(PublisherService.class.getName());
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final JsonNode MESSAGE_TEMPLATE;
 
@@ -54,35 +51,35 @@ public class PublisherService {
 
             return OBJECT_MAPPER.writeValueAsString(messageNode);
         } catch (JsonProcessingException e) {
-            LOGGER.log(Level.SEVERE, "Error creating message JSON", e);
+            System.out.println(e);
             return "";
         }
     }
 
     private MqttMessage createMqttMessage(String payload) {
-        LOGGER.info("Creating MQTT message");
+        System.out.println("Creating MQTT message");
         String formattedMessage = prepareMessage(payload);
         MqttMessage mqttMessage = new MqttMessage(formattedMessage.getBytes(StandardCharsets.UTF_8));
         mqttMessage.setQos(1);
-        LOGGER.info("Created message: " + formattedMessage);
+        System.out.println("Created message: " + formattedMessage);
         return mqttMessage;
     }
 
     public void sendMessageToDevice(String deviceID, String payload) {
         if (client == null) {
-            LOGGER.severe("MQTT client is not initialized!");
+            System.out.println("MQTT client is not initialized!");
             return;
         }
 
         try {
-            LOGGER.info("Sending MQTT message to device: " + deviceID);
-            LOGGER.info("MQTT client: " + client.getCurrentServerURI() + " " + client.getClientId());
+             System.out.println("Sending MQTT message to device: " + deviceID);
+             System.out.println("MQTT client: " + client.getCurrentServerURI() + " " + client.getClientId());
 
             client.publish("v3/user-app@jcudp/devices/" + deviceID + "/down/push", createMqttMessage(payload));
 
-            LOGGER.info("Message sent successfully to device " + deviceID);
+             System.out.println("Message sent successfully to device " + deviceID);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to send MQTT message", e);
+             System.out.println("Failed to send MQTT message: " + e);
         }
     }
 }
