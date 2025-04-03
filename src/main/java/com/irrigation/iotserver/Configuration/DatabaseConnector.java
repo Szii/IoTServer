@@ -56,13 +56,11 @@ public class DatabaseConnector {
             dataSource.setUsername(user);
             dataSource.setPassword(password);
 
-            dataSource.setMinIdle(5);
-            dataSource.setMaxIdle(10);
-            dataSource.setMaxOpenPreparedStatements(100);
-
-            // Validation query
-            dataSource.setValidationQuery("SELECT 1");
             dataSource.setTestOnBorrow(true);
+            dataSource.setValidationQuery("SELECT 1");
+            dataSource.setTestWhileIdle(true);
+            dataSource.setTimeBetweenEvictionRunsMillis(60000); // every 60 seconds
+            dataSource.setMinEvictableIdleTimeMillis(300000);   // 5 min
         }
     
     } 
