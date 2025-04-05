@@ -5,10 +5,12 @@
  */
 package com.irrigation.iotserver.Services;
 
+import com.irrigation.iotserver.Configuration.DatabaseConnector;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,11 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class DatabaseService implements DataAccess {
-    private final Connection connection;
+    private Connection connection;
     private static final Logger logger = Logger.getLogger(DatabaseService.class.getName());
+    
+    @Autowired
+    DatabaseConnector connector;
 
     public DatabaseService(Connection connection) {
         this.connection = connection;
@@ -52,6 +58,12 @@ public class DatabaseService implements DataAccess {
         try (PreparedStatement pst = prepareStatement(query, parameters);
              ResultSet result = pst.executeQuery()) {
             return result.next();
+        } 
+        catch (SQLException ex) {
+            refreshConnection();
+            executeUpdate(query, parameters);
+            logger.log(Level.SEVERE, "Database update error", ex);
+            return false;
         }
     }
 
@@ -60,6 +72,8 @@ public class DatabaseService implements DataAccess {
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
+            refreshConnection();
+            executeUpdate(query, parameters);
             logger.log(Level.SEVERE, "Database update error", ex);
             return false;
         }
@@ -337,5 +351,16 @@ public class DatabaseService implements DataAccess {
                 "device_ID",
                 username
         );
+    }
+
+    @Override
+    public void refreshConnection(){
+        try {
+            connection = connector.connect();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

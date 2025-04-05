@@ -59,8 +59,8 @@ public class DatabaseConnector {
             dataSource.setTestOnBorrow(true);
             dataSource.setValidationQuery("SELECT 1");
             dataSource.setTestWhileIdle(true);
-            dataSource.setTimeBetweenEvictionRunsMillis(60000); // every 60 seconds
-            dataSource.setMinEvictableIdleTimeMillis(300000);   // 5 min
+            dataSource.setTimeBetweenEvictionRunsMillis(60000); 
+            dataSource.setMinEvictableIdleTimeMillis(300000);   
         }
     
     } 

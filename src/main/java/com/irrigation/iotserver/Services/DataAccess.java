@@ -9,7 +9,9 @@ package com.irrigation.iotserver.Services;
  *
  * @author brune
  */
+import com.irrigation.iotserver.Configuration.DatabaseConnector;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.util.List;
 
 /**
@@ -23,7 +25,7 @@ public interface DataAccess {
      * @return hashed value representing password of user
      * @throws SQLException 
      */
-    public String getPasswordQuery(String name) throws SQLException;
+    public String getPasswordQuery(String name) throws SQLException, SQLNonTransientConnectionException;
     /**
      * Method returns username if name parameter is found in the data source
      * @param name Username
@@ -182,6 +184,8 @@ public interface DataAccess {
     public boolean checkIfDeviceExistsQuery(String deviceID) throws SQLException;
     
     public String getGroupNameQuery(String username) throws SQLException;
+    
+    public void refreshConnection();
                  
 
 
