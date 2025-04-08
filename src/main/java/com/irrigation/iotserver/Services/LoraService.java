@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Service;
  * @author brune
  */
 @Service
-public class LoraService extends Thread implements IMqttMessageListener, MqttCallback  {
+public class LoraService extends Thread implements IMqttMessageListener, MqttCallbackExtended  {
     
     private final static int PERCENTAGE_MIN = 0;
     private final static int PERCENTAGE_MAX = 100;
@@ -73,7 +74,6 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
                     MqttClient.generateClientId(), 
                     new MemoryPersistence());
             connect();
-            subscribeToTopics();
         } catch (MqttException ex) {
             Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -104,6 +104,7 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
         options.setUserName(conf.appId);
         options.setPassword(conf.key.toCharArray());  
         options.setAutomaticReconnect(true);
+        options.setKeepAliveInterval(30);
         try {
             
             client.setCallback(this);
@@ -131,13 +132,7 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     @Override
     public void connectionLost(Throwable cause) {
            System.err.println("Connection lost: " + cause.getMessage());
-           cause.printStackTrace();
-        try {
-            client.reconnect();
-        } catch (MqttException ex) {
-            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-          
+           cause.printStackTrace();    
     }
 
     @Override
@@ -159,6 +154,7 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
 
             boolean shouldIrrigate = storedThreshold >= parsedMessage.getHumidity() && storedIrrigationTime > 0;
             String irrigationMessage = shouldIrrigate ? String.valueOf(storedIrrigationTime) : "0";
+            
             if(!irrigationMessage.equals("0")){
                 System.out.println("Sending message. Got: " + parsedMessage.getHumidity() + " and threshold is: " + storedThreshold);
                 sendMessage(parsedMessage.getDeviceID(), irrigationMessage); 
@@ -166,7 +162,6 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
             else{
                 System.out.println("Do not sending message. Got: " + parsedMessage.getHumidity() + " and threshold is: " + storedThreshold);
             }
-            
             
             System.out.println("Saving measurements");
             saveMeasurement(parsedMessage);
@@ -197,14 +192,14 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
     }
     
     private void saveMeasurement(ParsedMessage data) throws SQLException{
-        if(data.getHumidity() <= PERCENTAGE_MAX || data.getHumidity() <= PERCENTAGE_MIN){
+        if(data.getHumidity() <= PERCENTAGE_MAX && data.getHumidity() >= PERCENTAGE_MIN){
                  System.out.println("Saving humidity " + data.getHumidity());
                  databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getHumidity()), getCurrentDateTime(), MeasurementType.TYPE_HUMIDITY.toString()); 
         }
         else{
             
         }
-        if(data.getTemperature() <= TEMPERATURE_MIN  || data.getTemperature() <= TEMPERATURE_MAX){
+        if(data.getTemperature() >= TEMPERATURE_MIN && data.getTemperature() <= TEMPERATURE_MAX){
                  System.out.println("Saving temperature " + data.getTemperature());
                  databaseManager.addMeasurementQuery(data.getDeviceID(), String.valueOf(data.getTemperature()), getCurrentDateTime(), MeasurementType.TYPE_TEMPERATURE.toString());  
         }
@@ -216,5 +211,15 @@ public class LoraService extends Thread implements IMqttMessageListener, MqttCal
         String formattedDateTime = currentDateTime.format(formatter);
         System.out.println("Formatted Date and Time: " + formattedDateTime);
         return formattedDateTime;
+    }
+
+    @Override
+    public void connectComplete(boolean bln, String string) {
+        System.out.println("Connected to broker: ");
+        try {
+            subscribeToTopics();
+        } catch (MqttException ex) {
+            Logger.getLogger(LoraService.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
